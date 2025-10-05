@@ -1,0 +1,206 @@
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+{% endblock %}
+
+<!-- Attendance Dashboard Modal -->
+<div class="modal fade" id="attendanceDashboardModal" tabindex="-1" aria-labelledby="attendanceDashboardModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="attendanceDashboardModalLabel">ARCen Attendance Dashboard</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body bg-light">
+
+        <!-- Header -->
+        <div class="dashboard-header text-center mb-4">
+          <img src="{% static 'img/arcen.png' %}" alt="School Logo" class="mx-auto drop-shadow" style="height:100px;">
+          <h1 class="fw-bold mt-2">1st ARCen Cadet Connect System</h1>
+          <h4>📊 Attendance Dashboard</h4>
+        </div>
+
+        <!-- 🔹 Filters Section -->
+        <div class="row justify-content-center mb-4">
+          <div class="col-md-4 mb-2">
+            <label for="schoolYearSelect" class="form-label fw-semibold">School Year</label>
+            <select id="schoolYearSelect" class="form-select">
+              <option selected disabled>Select School Year</option>
+              <option>2021–2022</option>
+              <option>2022–2023</option>
+              <option>2023–2024</option>
+              <option>2024–2025</option>
+            </select>
+          </div>
+          <div class="col-md-4 mb-2">
+            <label for="semesterSelect" class="form-label fw-semibold">Semester</label>
+            <select id="semesterSelect" class="form-select">
+              <option selected disabled>Select Semester</option>
+              <option>First Semester</option>
+              <option>Second Semester</option>
+              <option>Summer Term</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="row text-center mb-4">
+          <div class="col-md-4 mb-3">
+            <div class="metric-card total-strength shadow-sm p-3 rounded bg-white">
+              <h5>Total Strength</h5>
+              <h4>120</h4>
+            </div>
+          </div>
+          <div class="col-md-4 mb-3">
+            <div class="metric-card present shadow-sm p-3 rounded bg-white">
+              <h5>Present</h5>
+              <h4>108</h4>
+            </div>
+          </div>
+          <div class="col-md-4 mb-3">
+            <div class="metric-card absent shadow-sm p-3 rounded bg-white">
+              <h5>Absent</h5>
+              <h4>12</h4>
+            </div>
+          </div>
+        </div>
+
+        <!-- Absent + Chart -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="info-card shadow-sm p-3 rounded bg-white">
+              <h3>Absent Today</h3>
+              <ul class="absent-list">
+                <li>John Doe</li>
+                <li>Jane Smith</li>
+                <li>Mark Johnson</li>
+                <li>Sarah Lee</li>
+                <li>+8 more...</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-card shadow-sm p-3 rounded bg-white">
+              <h3>Attendance Chart</h3>
+              <canvas id="attendanceChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Flights Summary -->
+        <div class="info-card shadow-sm p-3 rounded bg-white">
+          <h3 class="mb-4">Flights Summary</h3>
+          <div class="row g-3">
+            <!-- Flight Alpha -->
+            <div class="col-md-6">
+              <div class="metric-card border">
+                <div class="bg-primary text-white text-center fw-bold py-1 rounded-top">Flight Alpha</div>
+                <div class="p-3">
+                  <div class="row text-center small">
+                    <div class="col"><p>Strength</p><p class="fw-bold">30</p></div>
+                    <div class="col"><p>Present</p><p class="fw-bold text-success">27</p></div>
+                    <div class="col"><p>Absent</p><p class="fw-bold text-warning">2</p></div>
+                    <div class="col"><p>Hospitalized</p><p class="fw-bold text-danger">1</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Flight Bravo -->
+            <div class="col-md-6">
+              <div class="metric-card border">
+                <div class="bg-success text-white text-center fw-bold py-1 rounded-top">Flight Bravo</div>
+                <div class="p-3">
+                  <div class="row text-center small">
+                    <div class="col"><p>Strength</p><p class="fw-bold">28</p></div>
+                    <div class="col"><p>Present</p><p class="fw-bold text-success">26</p></div>
+                    <div class="col"><p>Absent</p><p class="fw-bold text-warning">1</p></div>
+                    <div class="col"><p>Hospitalized</p><p class="fw-bold text-danger">1</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Flight Charlie -->
+            <div class="col-md-6">
+              <div class="metric-card border">
+                <div class="bg-warning text-white text-center fw-bold py-1 rounded-top">Flight Charlie</div>
+                <div class="p-3">
+                  <div class="row text-center small">
+                    <div class="col"><p>Strength</p><p class="fw-bold">32</p></div>
+                    <div class="col"><p>Present</p><p class="fw-bold text-success">29</p></div>
+                    <div class="col"><p>Absent</p><p class="fw-bold text-warning">2</p></div>
+                    <div class="col"><p>Hospitalized</p><p class="fw-bold text-danger">1</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Flight Delta -->
+            <div class="col-md-6">
+              <div class="metric-card border">
+                <div class="bg-danger text-white text-center fw-bold py-1 rounded-top">Flight Delta</div>
+                <div class="p-3">
+                  <div class="row text-center small">
+                    <div class="col"><p>Strength</p><p class="fw-bold">25</p></div>
+                    <div class="col"><p>Present</p><p class="fw-bold text-success">23</p></div>
+                    <div class="col"><p>Absent</p><p class="fw-bold text-warning">1</p></div>
+                    <div class="col"><p>Hospitalized</p><p class="fw-bold text-danger">1</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- modal-body -->
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function initAttendanceChart(present, absent) {
+  const ctx = document.getElementById("attendanceChart").getContext("2d");
+  new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: ["Present", "Absent"],
+      datasets: [{
+        data: [present, absent],
+        backgroundColor: ["#10b981", "#f59e0b"],
+        borderColor: ["#fff", "#fff"],
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: { color: "#374151", font: { size: 10 } }
+        }
+      }
+    }
+  });
+}
+
+// 🔸 Dummy event listener for dropdowns
+$("#schoolYearSelect, #semesterSelect").on("change", function () {
+  const year = $("#schoolYearSelect").val();
+  const sem = $("#semesterSelect").val();
+  console.log(`📅 Selected: ${year || "—"} | ${sem || "—"}`);
+  // You can call a function here like: loadAttendanceData(year, sem);
+});
+
+initAttendanceChart(108, 12);
+</script>
+{% endblock %}

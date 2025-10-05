@@ -1,0 +1,87 @@
+
+{% load static %}
+{% block title %}<title>ARCEN - User Management </title> {% endblock %}
+
+{% block content %}
+<div id="layoutSidenav_content">
+    <div id="app">
+        <main>
+            <!-- Begin Page Content -->
+            <div class="container-fluid pt-3">
+
+                <!-- Page Banner -->
+                <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px; overflow: hidden;">
+                  <div class="card-body d-flex justify-content-between align-items-center flex-wrap"
+                       style="border-left: 5px solid #0d6efd; background-color: #fff; border-radius: 12px;">
+
+                    <!-- Title -->
+                    <h2 class="mb-0 d-flex align-items-center text-dark">
+                      <i class="fas fa-users text-primary me-2"></i>
+                      <span>Users Page</span>
+                    </h2>
+                  </div>
+                </div>
+
+                <!-- Table for Users -->
+                <div class="table-responsive mt-2">
+                    <div class="row justify-content-end mb-3">
+                        <div class="col-auto">
+                            <!-- Add New User Button -->
+                            <a href="{% url 'users:add_user_view' %}" class="btn btn-sm btn-primary btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-user-plus"></i>
+                                </span>
+                                <span class="text" style="white-space: nowrap;">&nbsp;Add New</span>
+                            </a>
+                            <a href="#" class="btn btn-sm btn-info btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-building"></i>  <!-- or fa-plus-circle, fa-sitemap, etc. -->
+                                </span>
+                                <span class="text" style="white-space: nowrap; color:white;">&nbsp;Add Organization</span>
+                            </a>
+                            <!-- Refresh Button -->
+                            <button type="button" class="btn btn-sm btn-success btn-icon-split" id="btnRefreshUsers">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-sync"></i>
+                                </span>
+                                <span class="text" style="white-space: nowrap;">&nbsp;Refresh</span>
+                            </button>
+                        </div>
+                    </div>
+                    <table class="table table-bordered text-center" id="usersTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Avatar</th>
+                                <th>QR Code</th>
+                                <th>Full Name</th>
+                                <th>Active Status</th>
+                                <th>Roles</th> <!-- ✅ Corrected Title to Roles -->
+                                <th>Member of</th>
+                                <th>Last Active</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7">No users available</td> <!-- ✅ It should be 7 columns, not 6 -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <!-- /.container-fluid -->
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="{% static 'js/users/load-users.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        initializeUsersData(); // ✅ This triggers your JS to load users
+    });
+</script>
+{% endblock %}

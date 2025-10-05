@@ -1,0 +1,23 @@
+{% extends "partials/base_without_nav.html" %}
+
+{% block title %}Page Not Found{% endblock %}
+
+{% block body_class %}template-400{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="error-message text-center">
+        <h1 class="error-title">400</h1>
+        <h2 class="error-subtitle">Page Not Found</h2>
+
+        {% if message %}
+            <p class="error-description">{{ message }}</p>
+        {% else %}
+            <p class="error-description">Sorry, this page could not be found. Please check the URL or go back to the homepage.</p>
+        {% endif %}
+
+        <p class="text-gray-500 mb-0">It looks like you found a glitch in the matrix...</p>
+        <a href="{% url 'skt_dashboard' %}" class="error-home-link">Go to Homepage</a>
+    </div>
+</div>
+{% endblock %}

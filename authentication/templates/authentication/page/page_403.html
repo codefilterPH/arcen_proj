@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Access Denied - PAFLMS</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body {
+      background-color: #123C63;
+      margin: 0;
+      padding: 0;
+    }
+
+    .right-column {
+      position: relative;
+      background: linear-gradient(145deg, #123C63 0%, #0F2E4F 100%);
+      overflow: hidden;
+    }
+
+    #large-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background: radial-gradient(circle at center, #123C63 0%, #0E2946 100%);
+    }
+
+    #demo-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .access-denied-card {
+      position: relative;
+      z-index: 1;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    .access-denied-card .icon {
+      font-size: 4rem;
+      color: #dc3545;
+      animation: bounce 1s infinite;
+    }
+
+    .access-denied-card h1 {
+      color: #dc3545;
+      margin-top: 1rem;
+      animation: pulse 1.5s infinite;
+    }
+
+    .access-denied-card p {
+      color: #555;
+      margin-bottom: 0.75rem;
+    }
+
+    .access-denied-card a {
+      color: #0d6efd;
+      text-decoration: none;
+    }
+
+    .access-denied-card a:hover {
+      text-decoration: underline;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); color: #d9534f; }
+      50% { transform: scale(1.1); color: #ff6b6b; }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-fluid">
+    <div class="row min-vh-100">
+
+      <!-- Left Column (Image) -->
+      <div class="col-lg-6 d-none d-lg-block p-0">
+        <img src="{% static 'img/lms_bg_logo.png' %}" alt="PAF LMS Banner"
+             class="img-fluid w-100 h-100"
+             style="object-fit: cover;">
+      </div>
+
+      <!-- Right Column (Animated BG + Card) -->
+      <div class="col-lg-6 d-flex align-items-center justify-content-center right-column">
+        <!-- Animated BG -->
+        <div id="large-header"><canvas id="demo-canvas"></canvas></div>
+
+        <!-- Error Message Card -->
+        <div class="access-denied-card">
+          <div class="icon">🚫</div>
+          <h1>Access Denied</h1>
+          <p>You do not have permission to access this page.</p>
+          <p class="mt-3"><a href="javascript:history.back();">← Go back</a></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Background Animation Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.2/gsap.min.js"></script>
+  <script src="{% static 'js/utils/animated_bg.js' %}"></script>
+
+</body>
+</html>

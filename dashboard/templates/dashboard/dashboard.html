@@ -1,0 +1,194 @@
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+<div id="layoutSidenav_content">
+  <div id="app">
+    <main>
+      <!-- Header -->
+      <div class="dashboard-header text-center mb-6">
+        <img src="{% static 'img/arcen.png' %}" alt="School Logo" class="mx-auto drop-shadow">
+        <h1>1st ARCen Cadet Connect System</h1>
+        <h4>📊 Attendance Dashboard</h4>
+      </div>
+
+      <!-- Metric Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="metric-card total-strength">
+          <h5>Total Strength</h5>
+          <h4>120</h4>
+        </div>
+        <div class="metric-card present">
+          <h5>Present</h5>
+          <h4>108</h4>
+        </div>
+        <div class="metric-card absent">
+          <h5>Absent</h5>
+          <h4>12</h4>
+        </div>
+      </div>
+
+      <!-- Absent + Chart -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+        <div class="info-card">
+          <h3>Absent Today</h3>
+          <ul class="absent-list">
+            <li>John Doe</li>
+            <li>Jane Smith</li>
+            <li>Mark Johnson</li>
+            <li>Sarah Lee</li>
+            <li>+8 more...</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>Attendance Chart</h3>
+          <canvas id="attendanceChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Flights Summary -->
+      <div class="mt-8">
+        <div class="info-card">
+          <h3 class="mb-4">Flights Summary</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Flight Alpha -->
+            <div class="metric-card">
+              <div class="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-t-md">Flight Alpha</div>
+              <div class="p-3">
+                <div class="grid grid-cols-4 gap-2 text-center text-sm">
+                  <div>
+                    <p class="text-gray-500 text-xs">Strength</p>
+                    <p class="font-bold">30</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-500 text-xs">Present</p>
+                    <p class="font-bold text-green-600">27</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-500 text-xs">Absent</p>
+                    <p class="font-bold text-amber-600">2</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-500 text-xs">Hospitalized</p>
+                    <p class="font-bold text-red-600">1</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flight Bravo -->
+            <div class="metric-card">
+              <div class="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-t-md">Flight Bravo</div>
+              <div class="p-3">
+                <div class="grid grid-cols-4 gap-2 text-center text-sm">
+                  <div>
+                    <p class="text-gray-500 text-xs">Strength</p>
+                    <p class="font-bold">28</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-500 text-xs">Present</p>
+                    <p class="font-bold text-green-600">26</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-500 text-xs">Absent</p>
+                    <p class="font-bold text-amber-600">1</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-500 text-xs">Hospitalized</p>
+                    <p class="font-bold text-red-600">1</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flight Charlie -->
+            <div class="metric-card">
+              <div class="bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-t-md">Flight Charlie</div>
+              <div class="p-3">
+                <div class="grid grid-cols-4 gap-2 text-center text-sm">
+                  <div>
+                    <p class="text-gray-500 text-xs">Strength</p>
+                    <p class="font-bold">32</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-500 text-xs">Present</p>
+                    <p class="font-bold text-green-600">29</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-500 text-xs">Absent</p>
+                    <p class="font-bold text-amber-600">2</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-500 text-xs">Hospitalized</p>
+                    <p class="font-bold text-red-600">1</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flight Delta -->
+            <div class="metric-card">
+              <div class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-t-md">Flight Delta</div>
+              <div class="p-3">
+                <div class="grid grid-cols-4 gap-2 text-center text-sm">
+                  <div>
+                    <p class="text-gray-500 text-xs">Strength</p>
+                    <p class="font-bold">25</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-500 text-xs">Present</p>
+                    <p class="font-bold text-green-600">23</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-500 text-xs">Absent</p>
+                    <p class="font-bold text-amber-600">1</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-500 text-xs">Hospitalized</p>
+                    <p class="font-bold text-red-600">1</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+{% block extra_js %}
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  function initAttendanceChart(present, absent) {
+    const ctx = document.getElementById("attendanceChart").getContext("2d");
+    new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: ["Present", "Absent"],
+        datasets: [{
+          data: [present, absent],
+          backgroundColor: ["#10b981", "#f59e0b"], // green, amber
+          borderColor: ["#fff", "#fff"],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: {
+              color: "#374151",
+              font: { size: 10 }
+            }
+          }
+        }
+      }
+    });
+  }
+  initAttendanceChart(108, 12);
+</script>
+{% endblock %}

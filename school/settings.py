@@ -46,9 +46,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # APPS
+    'authentication',
     'attendance',
     'schools',
     'users',
+    'qrscanner',
+    'dashboard',
+    'student',
+    # THIRD PARTY
+    'csp',
+    'auditlog',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -59,6 +69,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "auditlog.middleware.AuditlogMiddleware",
+    'csp.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'school.urls'
@@ -66,7 +78,7 @@ ROOT_URLCONF = 'school.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [ BASE_DIR / "school" / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -99,6 +111,7 @@ DATABASES = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
+        'authentication.utils.cookie_jwt_auth.CookieJWTAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': (
@@ -106,33 +119,37 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
-    'EXCEPTION_HANDLER': 'messaging_proj.exceptions.custom_exception_handler',
+    'EXCEPTION_HANDLER': 'school.exceptions.exceptions.custom_exception_handler',
 
     # 👇 prevent DRF from hijacking `?format=...`
     'URL_FORMAT_OVERRIDE': None,
 }
 
 
-
 SIMPLE_JWT = {
-    # Default token expiry time
-    'ACCESS_TOKEN_LIFETIME': timedelta(weeks=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(weeks=2),
+    # Access token should be **short-lived** (don’t set 1 week)
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),   # or 15 mins in prod
+
+    # Refresh token can be longer
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # 1 week
+
+    # Rotate refresh tokens: each use issues a new one
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
-    'UPDATE_LAST_LOGIN': False,
+
+    'UPDATE_LAST_LOGIN': True,
+
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
-    'VERIFYING_KEY': None,
-    'AUDIENCE': None,
-    'ISSUER': None,
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
+
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_BLACKLIST': 'rest_framework_simplejwt.token_blacklist',
-    'TOKEN_TYPE_CLAIM': 'token_type',
+
+    # Optional (if you add custom claims)
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
 }
+
 # Application definition
 
 
@@ -169,8 +186,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -183,10 +198,130 @@ STATIC_URL = 'static/'
 
 # For serving static files in development
 STATICFILES_DIRS = [
+    BASE_DIR / "authentication" / "static",
+    BASE_DIR / "qrscanner" / "static",
+    BASE_DIR / "dashboard" / "static",
     BASE_DIR / "users" / "static",
-    BASE_DIR / "attendance" / "static",
+    # BASE_DIR / "attendance" / "static",
     BASE_DIR / "schools" / "static",
-    # BASE_DIR / "school" / "static",
+    BASE_DIR / "school" / "static",
+    BASE_DIR / "student" / "static",
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# MEDIA FILES
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+CONTENT_SECURITY_POLICY = {
+    "DIRECTIVES": {
+        "default-src": ["'self'"],
+        "script-src": [
+            "'self'",
+            "'unsafe-inline'",
+            "https://code.jquery.com",
+            "https://cdn.jsdelivr.net",
+            "https://cdn.jsdelivr.net/npm",
+            "https://cdnjs.cloudflare.com",
+            "https://unpkg.com",
+            "https://cdn.jsdelivr.net/npm/vue",
+            "https://cdn.jsdelivr.net/npm/axios",
+            "https://cdn.jsdelivr.net/npm/sweetalert2",
+            "https://cdn.jsdelivr.net/npm/pace-js",
+            "https://www.google.com/recaptcha/",
+            "https://www.gstatic.com",
+            "https://cdn.datatables.net",
+            "https://code.jquery.com",
+            "https://cdn.ckeditor.com",
+            "https://cdn.tailwindcss.com",
+            "https://ajax.googleapis.com",
+            "https://kit.fontawesome.com",
+            "https://ka-f.fontawesome.com",
+
+        ],
+        "style-src": [
+            "'self'",
+            "'unsafe-inline'",
+            "https://fonts.googleapis.com",
+            "https://cdnjs.cloudflare.com",
+            "https://cdn.jsdelivr.net",
+            "https://cdn.datatables.net",
+            "https://code.jquery.com",
+            "https://unpkg.com",
+            "https://cdn.ckeditor.com",
+        ],
+        "font-src": [
+            "'self'",
+            "https://fonts.gstatic.com",
+            "https://cdnjs.cloudflare.com",
+            "https://cdn.jsdelivr.net",
+        ],
+        "img-src": ["'self'", "data:", "https://i.ytimg.com"],
+        "connect-src": [
+            "'self'",
+            "https://cdn.jsdelivr.net",
+            "https://www.google.com/recaptcha/",
+            "https://www.gstatic.com/recaptcha/",
+            "https://cke4.ckeditor.com",
+            "https://cdn.ckeditor.com",
+        ],
+        "object-src": ["'none'"],
+        "frame-src": [
+            "'self'",
+            "https://www.google.com/recaptcha/",
+            "https://www.google.com/",
+            "https://www.youtube.com/",
+        ],
+
+        "base-uri": ["'self'"],
+        "form-action": ["'self'"],
+        "frame-ancestors": [
+            "'self'",
+        ]
+    }
+}
+
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = "ALLOWALL"
+
+
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = True
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600
+
+import subprocess
+# USES THE HAS COMMITS AS APP VERSION
+try:
+    APP_VERSION = subprocess.check_output(
+        ["git", "rev-parse", "--short", "HEAD"]
+    ).decode("utf-8").strip()
+except Exception:
+    APP_VERSION = "dev"
+
+ALLOWED_ROLE_USERS_MANAGEMENT = [
+    'DEVELOPER', 'ADMINISTRATOR', 'CIES',
+]
+
+LOGIN_URL = "/accounts/login/"
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:8000"]
+# settings.py
+
+# Only send cookies over HTTPS
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+# Prevent JS access
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+
+# Limit cross-site cookie sending
+SESSION_COOKIE_SAMESITE = "Strict"   # or "Lax"
+CSRF_COOKIE_SAMESITE = "Strict"

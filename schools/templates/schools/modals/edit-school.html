@@ -1,0 +1,87 @@
+{% load static %}
+<!-- Edit School Modal -->
+<div class="modal fade" id="editSchoolModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-edit me-2 text-warning"></i> Edit School
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Body -->
+      <form id="editSchoolForm" enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+        <input type="hidden" id="editSchoolId" name="id">
+
+        <div class="modal-body">
+          <!-- Name -->
+          <div class="mb-3">
+            <label for="editSchoolName" class="form-label">School Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="editSchoolName" name="name" placeholder="Enter school name" required>
+          </div>
+
+          <!-- Address -->
+          <div class="mb-3">
+            <label for="editSchoolAddress" class="form-label">Address</label>
+            <textarea class="form-control" id="editSchoolAddress" name="address" rows="3" placeholder="Enter address (optional)"></textarea>
+          </div>
+
+          <!-- Logo -->
+          <div class="mb-3">
+            <label for="editSchoolLogo" class="form-label">Logo</label>
+            <input type="file" class="form-control" id="editSchoolLogo" name="logo" accept="image/*">
+            <div class="form-text">Upload a new logo to replace the existing one (optional)</div>
+
+            <!-- Preview -->
+            <div class="mt-3 text-center">
+              <img id="currentSchoolLogoPreview" src="{% static 'img/no_logo.png' %}"
+                   alt="Current Logo"
+                   class="img-thumbnail"
+                   style="max-height:120px;">
+              <div class="small text-muted mt-1">Current Logo</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i> Cancel
+          </button>
+          <button type="submit" class="btn btn-warning text-white">
+            <i class="fas fa-save me-1"></i> Update School
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!--<script src="{% static 'js/schools/edit-school.js' %}"></script>-->
+<script>
+  $(document).ready(function() {
+
+
+    // 🟡 When clicking the edit button, populate the modal
+    $(document).on('click', '.btn-edit-school', function() {
+      const id = $(this).data('id');
+      const name = $(this).data('name');
+      const address = $(this).data('address');
+      const logo = $(this).data('logo');
+
+      $('#editSchoolId').val(id);
+      $('#editSchoolName').val(name);
+      $('#editSchoolAddress').val(address);
+      $('#currentSchoolLogoPreview').attr('src', logo || "{% static 'img/no_logo.png' %}");
+
+      // Update modal title dynamically
+      $('#editSchoolModal .modal-title span').text(name);
+
+      $('#editSchoolModal').modal('show');
+    });
+  });
+</script>

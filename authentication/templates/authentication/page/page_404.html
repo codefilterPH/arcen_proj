@@ -1,0 +1,17 @@
+
+
+{% extends "exam/partials/base_without_nav.html" %}
+{% block title %}Page Not Found{% endblock %}
+{% block body_class %}template-404{% endblock %}
+{% block content %}
+
+<div class="container mt-5 mb-5">
+    <div class="error-message">
+        <h1 class="error-title">404</h1>
+        <h2 class="error-subtitle">Page Not Found</h2>
+        <p class="text-gray-500 mb-0">It looks like you found a glitch in the matrix...</p>
+        <p class="error-description">Sorry, this page could not be found. Please check the URL or go back to the homepage.</p>
+        <a href="{% url 'dashboard' %}" class="error-home-link">Go to Homepage</a>
+    </div>
+</div>
+{% endblock %}

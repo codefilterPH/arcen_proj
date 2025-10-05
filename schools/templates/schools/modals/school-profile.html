@@ -1,0 +1,69 @@
+{% load static %}
+
+<!-- School Profile Modal -->
+<div class="modal fade" id="schoolProfileModal" tabindex="-1" aria-labelledby="schoolProfileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="schoolProfileModalLabel">
+          <i class="fas fa-school me-2"></i> School Profile
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body bg-light">
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body">
+            <div class="row g-4 align-items-start">
+
+              <!-- Column 1: Seal/Logo -->
+              <div class="col-md-3 text-center">
+                <img id="profileSchoolLogo" src="{% static 'img/no_logo.png' %}"
+                     alt="School Logo"
+                     class="img-fluid rounded shadow-sm mb-2"
+                     style="max-height:150px;">
+                <div class="fw-semibold text-muted">Official Seal</div>
+              </div>
+
+              <!-- Column 2: Info -->
+              <div class="col-md-5">
+                <h4 class="fw-bold mb-1" id="profileSchoolTitle">School Name Here</h4>
+                <p class="text-muted mb-2" id="profileSchoolAddress">
+                  <i class="fas fa-map-marker-alt me-2 text-danger"></i> Address not set
+                </p>
+                <p class="mb-0 small">
+                  <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                  Created: <span id="profileSchoolCreated">--</span>
+                </p>
+                <p class="mb-0 small">
+                  <i class="fas fa-clock me-2 text-success"></i>
+                  Updated: <span id="profileSchoolUpdated">--</span>
+                </p>
+              </div>
+
+              <!-- Column 3: Organic Personnel -->
+              <div class="col-md-4">
+                <h6 class="fw-bold mb-2">
+                  <i class="fas fa-users me-2 text-primary"></i> Organic Personnel
+                </h6>
+                <ul class="list-group list-group-flush" id="profilePersonnel">
+                  <li class="list-group-item px-0 d-flex align-items-center">
+                    <i class="fas fa-user-circle me-2 text-secondary"></i> No personnel assigned
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Back button -->
+        <div class="text-end">
+          <button id="btnBackToSchoolsProfile" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-arrow-left"></i> Back to Schools
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

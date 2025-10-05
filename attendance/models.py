@@ -1,5 +1,6 @@
 from django.db import models
-from schools.models import Flight, Student
+from schools.models import Flight
+from student.models import Student
 
 # Create your models here.
 class Attendance(models.Model):

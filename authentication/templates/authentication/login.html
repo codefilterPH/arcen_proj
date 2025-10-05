@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARCEN - Login Page</title>
+  {% block csrfToken %} <meta name="csrf-token" content="{{ csrf_token }}"> {% endblock %}
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --color-primary-purple: #6A3AB2;
+      --color-light-purple: #AF8EDC;
+      --color-dark-blue: #1C2D5A;
+      --color-gradient-start: #1A274E;
+      --color-gradient-end: #4C2F8A;
+      --color-text-dark: #333333;
+      --color-text-medium: #555555;
+    }
+    html, body {
+      overflow: hidden;
+    }
+
+    .focus-ring-primary-purple:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(106, 58, 178, 0.5);
+      border-color: var(--color-primary-purple);
+    }
+
+    /* Animated BG layers */
+    #large-header {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    #demo-canvas {
+      display: block;
+      width: 100%; height: 100%;
+    }
+
+    .login-card {
+      position: relative;
+      z-index: 2; /* above canvas */
+    }
+
+    /* Dark overlay for readability */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 1;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased text-[var(--color-text-dark)] h-screen w-screen relative">
+
+  <!-- Background image -->
+  <div class="absolute inset-0">
+    <img src="{% static 'img/attendance.png' %}" alt="ARCEN Banner" class="w-full h-full object-stretch">
+  </div>
+
+  <!-- Animated background canvas -->
+  <div id="large-header">
+    <canvas id="demo-canvas"></canvas>
+  </div>
+
+  <!-- Dark overlay to improve readability -->
+  <div class="overlay"></div>
+
+  <!-- Login card on the right -->
+  <div class="relative z-10 flex justify-end items-center h-full mr-5">
+    <div class="login-card bg-white w-full max-w-md p-10 rounded-2xl shadow-2xl m-6 transform transition-transform duration-300 hover:scale-105">
+
+      <!-- Logo -->
+      <div class="flex flex-col items-center mb-8">
+        <img src="{% static 'img/1st_arcen_logo.png' %}" alt="ARCEN Logo"
+             class="w-24 h-24 object-cover rounded-full border border-gray-300 bg-white p-1 shadow-md mb-4">
+        <h3 class="text-3xl font-extrabold text-[var(--color-text-dark)] mb-2 text-center">LOGIN PAGE</h3>
+        <p class="text-[var(--color-text-medium)] text-center">1st ARCen Cadet Connect System</p>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm">
+        <div class="mb-5">
+          <label for="username" class="block text-sm font-semibold mb-2">Username</label>
+          <input type="text" id="username" name="username"
+                 class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus-ring-primary-purple"
+                 placeholder="Enter your username" required>
+        </div>
+
+        <div class="mb-6 relative">
+          <label for="password" class="block text-sm font-semibold mb-2">Password</label>
+          <input type="password" id="password" name="password"
+                 class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus-ring-primary-purple"
+                 placeholder="Enter your password" required>
+          <i class="fas fa-eye absolute top-1/2 right-4 -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer mt-3" id="togglePassword"></i>
+        </div>
+
+        <div class="mb-6 flex items-center justify-between text-sm">
+          <div class="flex items-center">
+            <input type="checkbox" id="rememberMe" class="h-4 w-4 text-primary-purple border-gray-300 rounded focus-ring-primary-purple">
+            <label for="rememberMe" class="ml-2 text-[var(--color-text-medium)]">Remember Me</label>
+          </div>
+          <a href="{% url 'authentication:password_reset_request_view' %}" class="text-primary-purple hover:underline">Forgot Password?</a>
+        </div>
+
+        <button type="button" id="btn_login"
+                class="bg-[var(--color-primary-purple)] text-white w-full py-3 px-6 rounded-lg font-bold shadow-md hover:bg-[var(--color-light-purple)] transition">
+          Login
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.2/gsap.min.js"></script>
+  <script src="{% static 'js/utils/animated_bg.js' %}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="{% static 'js/utils/swal-messages.js' %}"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="{% static 'js/authentication/login.js' %}"></script>
+  <script>
+    function initializeLogin() {
+      console.log('initialized login button');
+
+      $("#btn_login").click(function () {
+        login();
+      });
+
+      $('#password').keypress(function (e) {
+        if (e.which === 13) {
+          login();
+        }
+      });
+
+      $('#username').keypress(function (e) {
+        if (e.which === 13) {
+          $('#password').focus();
+        }
+      });
+
+      function login() {
+        console.log('running function login');
+        var username = $('#username').val();
+        var password = $('#password').val();
+        var rememberMe = $('#rememberMe').is(':checked');  // ✅ FIXED id
+
+        if (!username) {
+          stop_message('Username field is required!');
+          return;
+        }
+        if (!password) {
+          stop_message('Password field is required!');
+          return;
+        }
+
+        authenticateUser(username, password, rememberMe);
+      }
+    }
+
+    // Run init on document ready
+    $(document).ready(function () {
+
+      $("#togglePassword").click(function () {
+        let passwordField = $("#password");
+        let type = passwordField.attr("type") === "password" ? "text" : "password";
+        passwordField.attr("type", type);
+        $(this).toggleClass("fa-eye fa-eye-slash");
+      });
+
+      initializeLogin();
+    });
+  </script>
+
+</body>
+</html>

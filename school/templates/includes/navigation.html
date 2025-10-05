@@ -1,0 +1,75 @@
+{% load static %}
+<nav class="topnav navbar navbar-expand shadow navbar-light bg-white px-3">
+    <!-- Sidebar Toggle -->
+    <button class="btn btn-icon btn-transparent-dark me-2" id="sidebarToggle">
+        <i data-feather="menu"></i>
+    </button>
+
+    <!-- Brand -->
+    <a class="navbar-brand" href="/">QRAR</a>
+
+    <!-- Desktop Search -->
+    <form class="form-inline d-none d-lg-block ms-3 flex-grow-1">
+        <div class="input-group input-group-joined input-group-solid">
+            <input class="form-control" type="search" placeholder="Search..." aria-label="Search" />
+            <div class="input-group-text"><i data-feather="search"></i></div>
+        </div>
+    </form>
+
+    <!-- Navbar Right -->
+    <ul class="navbar-nav ms-auto align-items-center">
+
+        <!-- Notification Dropdown -->
+        <li class="nav-item dropdown me-3">
+            <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-bell"></i>
+                <span class="badge bg-danger text-white ms-1" id="unreadCount">12</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationDropdown">
+                <h6 class="dropdown-header">Notifications</h6>
+                <div class="dropdown-divider"></div>
+                <div id="notificationContainer">
+                    <a class="dropdown-item text-muted">No new notifications</a>
+                </div>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item text-center small" href="#">View All</a>
+            </div>
+        </li>
+
+        <!-- User Dropdown -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="" id="userProfilePicture" class="rounded-circle me-2" width="32" height="32" alt="Avatar" />
+            </a>
+            <div class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                <h6 class="dropdown-header d-flex align-items-center">
+                    <img src="" id="userProfilePictureChild" class="rounded-circle me-2" width="32" height="32" />
+                    <div>
+                        <div class="fw-bold"></div>
+                        <div class="text-muted small"></div>
+                    </div>
+                </h6>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" id="profileLink"><i data-feather="user" class="me-2"></i> Profile</a>
+                <a class="dropdown-item" id="logoutButton" data-bs-toggle="modal" data-bs-target="#logoutModal"><i data-feather="log-out" class="me-2"></i> Logout</a>
+            </div>
+        </li>
+    </ul>
+</nav>
+{% comment %}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{% static 'notifications/js/socket-notifications.js' %}"></script>
+<script src="{% static 'notifications/js/fetch-unread-read-notif.js' %}"></script>
+<script src="{% static 'js/utils/swal-messages.js' %}"></script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetchNotifications();
+        NotificationSocket();
+
+        // Nothing to override manually; Bootstrap handles dropdown toggles
+    });
+</script>
+{% endcomment %}

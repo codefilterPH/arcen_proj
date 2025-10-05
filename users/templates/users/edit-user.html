@@ -1,0 +1,25 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %}<title>DMS ACCC - User Editing </title> {% endblock %}
+
+{% block content %}
+<div id="layoutSidenav_content">
+    <div id="app">
+        <main>
+            <div class="container-fluid p-5">
+                <!-- Page Heading -->
+                <h1 class="h3 mb-4 text-gray-800">Edit User Details</h1>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ user_edit_form.as_p }}
+                    {{ user_profile_form.as_p }}
+                    <button type="submit" name="edit_user" class="btn btn-sm btn-primary">Save Changes</button>
+                    <a href="{% url 'users:manage_users' %}" class="btn btn-sm btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+
+    <!-- /.container-fluid -->
+{% endblock %}

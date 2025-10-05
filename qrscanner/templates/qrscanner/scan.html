@@ -1,0 +1,82 @@
+{% load static %}
+<!-- 🔹 QR Scanner Modal -->
+<div class="modal fade" id="qrScannerModal" tabindex="-1" aria-labelledby="qrScannerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="qrScannerModalLabel">
+          <i class="fas fa-qrcode me-2"></i> QR Code Scanner
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body bg-light">
+
+        <!-- QR Reader Container -->
+        <div class="text-center mb-3">
+          <div id="reader" style="width:100%; max-width:400px; margin:0 auto;"></div>
+          <div id="result" class="mt-3 text-muted">Scan a QR code to see the result here</div>
+        </div>
+
+        <!-- Student Card (hidden initially) -->
+        <div id="studentCard" class="card shadow-sm mx-auto" style="max-width:500px; display:none;">
+          <div class="card-body text-center">
+            <img src="{% static 'img/wcc.png' %}" alt="School Logo" class="mb-3" style="height:80px;">
+            <h4 class="fw-bold mb-3">Student Identification</h4>
+
+            <div class="text-start mb-3 ps-3">
+              <p class="mb-1"><strong>ID:</strong> <span id="studentId">---</span></p>
+              <p class="mb-1"><strong>Name:</strong> <span id="studentName">---</span></p>
+              <p class="mb-1"><strong>Class:</strong> <span id="studentClass">---</span></p>
+            </div>
+
+            <div class="d-flex justify-content-center gap-2">
+              <button class="btn btn-success" onclick="confirmAttendance()">
+                <i class="fas fa-check me-1"></i> Confirm
+              </button>
+              <button class="btn btn-danger" onclick="cancelAttendance()">
+                <i class="fas fa-times me-1"></i> Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times me-1"></i> Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script src="{% static 'js/qrscanner.js' %}" type="text/javascript"></script>
+
+<script>
+  $(document).ready(function() {
+    // Start scanner only when modal opens
+    $("#qrScannerModal").on("shown.bs.modal", function () {
+        console.log("📸 QR Scanner modal opened.");
+        if (typeof initQrScanner === "function") {
+            setTimeout(() => initQrScanner(), 300);  // delay to allow modal render
+        }
+    });
+
+
+    // Stop scanner when modal closes
+    $("#qrScannerModal").on("hidden.bs.modal", function () {
+        console.log("❌ QR Scanner modal closed.");
+        if (typeof stopQrScanner === "function") {
+            stopQrScanner();
+        }
+    });
+  });
+</script>

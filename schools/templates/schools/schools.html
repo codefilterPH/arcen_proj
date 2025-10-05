@@ -1,0 +1,124 @@
+{% load static %}
+{% block extra_css %}
+<style>
+  /* Archived toggle button base */
+  #btnToggleArchived {
+    transition: all 0.2s ease;
+    font-weight: 500;
+    border-radius: 6px;
+  }
+  #btnToggleArchived.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+    color: #fff;
+  }
+  #btnToggleArchived.btn-warning {
+    background-color: #f59e0b;
+    border: none;
+    color: #fff;
+  }
+  #btnToggleArchived:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+  /* Banner Header Scoped Style */
+  .banner-header {
+    background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    color: #fff;
+    border-radius: 0.5rem 0.5rem 0 0;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    box-shadow: inset 0 -2px 0 rgba(255, 255, 255, 0.2);
+  }
+  .banner-header i {
+    color: #bfdbfe;
+  }
+
+</style>
+
+<link rel="stylesheet" href="{% static 'css/custom-style.css' %}">
+{% endblock %}
+<div id="layoutSidenav_content">
+  <div id="app">
+    <main>
+      <div class="container-fluid pt-3">
+
+        <!-- Page Banner -->
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px; overflow: hidden;">
+          <div class="card-body d-flex justify-content-between align-items-center flex-wrap"
+               style="border-left: 5px solid #0d6efd; background-color: #fff; border-radius: 12px;">
+            <h2 class="mb-0 d-flex align-items-center text-dark">
+              <i class="fas fa-school text-primary me-2"></i>
+              <span>Schools</span>
+            </h2>
+          </div>
+        </div>
+
+        <!-- Controls: Search + Buttons -->
+        <div class="row mb-3">
+          <div class="col-md-6 mb-2">
+            <input type="text" id="searchSchools" class="form-control" placeholder="🔍 Search schools...">
+          </div>
+          <div class="col-md-6 d-flex flex-wrap gap-2 justify-content-md-end">
+            <button type="button"
+                    title="Add New School"
+                    class="btn btn-outline-primary d-flex align-items-center gap-1"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addSchoolModal">
+              <i class="fas fa-plus"></i>
+            </button>
+
+            <button type="button"
+                    title="Refresh List"
+                    class="btn btn-outline-success d-flex align-items-center gap-1"
+                    id="btnRefresh">
+              <i class="fas fa-sync"></i>
+            </button>
+
+            <button type="button"
+                    title="Archived Schools"
+                    id="btnToggleArchived"
+                    class="btn btn-outline-secondary d-flex align-items-center gap-1">
+              <i class="fas fa-archive"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Schools Grid (dynamic content will load here) -->
+        <div class="row" id="schoolsGrid"></div>
+
+        <!-- Pagination -->
+        <nav>
+          <ul class="pagination justify-content-center mt-3" id="schoolsPagination"></ul>
+        </nav>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Add School Modal -->
+{% include 'student/modals/add-student-modal.htm' %}
+{% include 'schools/modals/add-school.html' %}
+{% include 'school-metric/metric-modal.html' %}
+{% include 'schools/modals/school-profile.html' %}
+{% include 'schools/modals/edit-school.html' %}
+{% include 'student/modals/students.html' %}
+
+{% block extra_js %}
+
+<script src="{% static 'js/schools/delete-school.js' %}"></script>
+<script src="{% static 'js/schools/list-schools.js' %}"></script>
+<script>
+  $(document).ready(function() {
+
+    // When the modal closes
+    $('#addParticipantModal').on('hidden.bs.modal', function () {
+        location.reload();
+    });
+
+  });
+</script>
+{% endblock %}

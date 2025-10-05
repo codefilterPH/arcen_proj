@@ -3,28 +3,23 @@ from django.db import models
 # Create your models here.
 from django.db import models
 from django.contrib.auth.models import User
-
+from auditlog.registry import auditlog
 
 class SchoolOrg(models.Model):
     """A school or organization that admits students."""
     name = models.CharField(max_length=255, unique=True)
     address = models.TextField(blank=True, null=True)
+    logo = models.ImageField(
+        upload_to="schools/logos/",
+        blank=True,
+        null=True,
+        help_text="Upload the logo of the school (optional)"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
-
-
-class Student(models.Model):
-    """A student who belongs to a school org."""
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    school = models.ForeignKey(SchoolOrg, on_delete=models.CASCADE, related_name="students")
-    student_id = models.CharField(max_length=50, unique=True)
-    joined_date = models.DateField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.user.get_full_name()} ({self.student_id})"
-
 
 class SchoolYear(models.Model):
     """Academic year, e.g., 2025-2026."""
@@ -68,14 +63,3 @@ class Flight(models.Model):
         return f"{self.class_obj.code} - {self.name}"
 
 
-class FlightMembership(models.Model):
-    """Students belong to a flight."""
-    flight = models.ForeignKey(Flight, on_delete=models.CASCADE, related_name="memberships")
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="flights")
-    joined_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ("flight", "student")
-
-    def __str__(self):
-        return f"{self.student} → {self.flight}"

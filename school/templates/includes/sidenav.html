@@ -1,0 +1,135 @@
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .sidebar-dropdown-menu {
+        display: none;
+        padding-left: 1.5rem;
+        margin-top: 0.25rem;
+    }
+    .sidebar-dropdown-menu.show {
+        display: block;
+    }
+    .dropdown-item {
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+    }
+    .prominent-workspace {
+        background-color: #F58025;
+        color: white !important;
+        font-size: 1rem;
+        border-radius: 0.5rem;
+        margin: 1rem 10px 0 10px;
+        height: 60px;
+        transition: background-color 0.2s ease;
+        display: flex;
+        align-items: center;
+    }
+    .prominent-workspace:hover {
+        background-color: #0b5ed7;
+        cursor: pointer;
+    }
+    .prominent-workspace .nav-link-icon i {
+        color: white !important;
+        font-size: 1.2rem;
+    }
+</style>
+{% endblock %}
+
+<div id="layoutSidenav_nav">
+    <nav class="sidenav shadow-right sidenav-light">
+        <div class="sidenav-menu">
+            <div class="nav accordion" id="accordionSidenav">
+
+                <div class="sidenav-menu-heading">Core</div>
+                <!-- 🔹 Scan Button Above Dashboard -->
+                <a type="button"
+                      class="btn btn-dark btn-lg shadow-sm d-flex align-items-center gap-1 mr-5 ml-5"
+                      data-bs-toggle="modal"
+                      data-bs-target="#qrScannerModal"
+                      style="border-radius: 8px;">
+                   <i class="fas fa-qrcode fs-5"></i>
+                   <span>Scan</span>
+                </a>
+                <div class="sidenav-menu-heading"></div>
+                <!-- Dashboard -->
+                <a class="nav-link sidebar-link" href="#" data-target="#dashboardContainer">
+                    <div class="nav-link-icon"><i data-feather="activity"></i></div>
+                    Dashboard
+                </a>
+                <div class="sidenav-menu-heading">SCHOOL SEC</div>
+
+                <!-- ARCEN Management -->
+                <a class="nav-link sidebar-link" href="#" data-target="#schoolsContainer">
+                  <div class="nav-link-icon"><i data-feather="users"></i></div>
+                  School Management
+                </a>
+
+                <div class="sidenav-menu-heading">CEIS</div>
+
+                <!-- Users -->
+                <a class="nav-link sidebar-link" href="#" data-target="#usersContainer">
+                  <div class="nav-link-icon"><i data-feather="users"></i></div>
+                  Users
+                </a>
+
+                <!-- System Manual -->
+                <a class="nav-link sidebar-link" href="#" data-target="#manualContainer">
+                    <div class="nav-link-icon"><i data-feather="list"></i></div>
+                    System Manual
+                </a>
+            </div>
+        </div>
+
+        <!-- Sidenav Footer-->
+        <div class="sidenav-footer" style="height:120px;">
+            <div class="sidenav-footer-content pt-4">
+                <div class="sidenav-footer-subtitle">Logged in as:</div>
+                <div class="sidenav-footer-title" id="sidebarName"></div>
+                <a class="dropdown-item mb-3" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+</div>
+{% include 'qrscanner/scan.html' %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function () {
+        // Handle sidebar link click
+        $(".sidebar-link").on("click", function (e) {
+            e.preventDefault();
+
+            let target = $(this).data("target");
+
+            if (target) {
+                $(".content-container").addClass("d-none"); // hide all containers
+                $(target).removeClass("d-none");           // show selected
+            }
+
+            // Highlight active link
+            $(".sidebar-link").removeClass("active");
+            $(this).addClass("active");
+
+            // ✅ Save active link to localStorage
+            localStorage.setItem("activeSidebarLink", target);
+        });
+
+        // ✅ On page load, restore active link
+        let savedTarget = localStorage.getItem("activeSidebarLink");
+        if (savedTarget) {
+            // simulate click on the saved link
+            $(`.sidebar-link[data-target='${savedTarget}']`).trigger("click");
+        } else {
+            // Default = Dashboard
+            $(".sidebar-link[data-target='#dashboardContainer']").addClass("active");
+            $("#dashboardContainer").removeClass("d-none");
+        }
+    });
+</script>
+{% endblock %}

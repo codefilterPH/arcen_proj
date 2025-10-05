@@ -1,0 +1,179 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %}<title>DMS ACCC - Profile Updating </title> {% endblock %}
+
+{% block extra_css %}
+<!-- Select2 CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container mt-5">
+
+            <!-- Banner -->
+            <div class="card w-100 mb-4 shadow-sm border-0">
+                <div class="card-body d-flex align-items-center p-3"
+                     style="border-left: 5px solid #0d6efd; background: #ffffff;">
+                    <h2 class="mb-0">
+                        <i class="fas fa-user-edit text-primary me-2"></i> Update Your Profile
+                    </h2>
+                </div>
+            </div>
+
+            <!-- Profile Card -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body" style="background-color: #f8f9fa;">  <!-- Gray background -->
+
+                    <form id="updateProfileForm">
+                        <!-- Basic Info -->
+                        <div class="mb-3">
+                            <label for="first_name" class="form-label">First Name:</label>
+                            <input type="text" id="first_name" name="first_name" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label">Last Name:</label>
+                            <input type="text" id="last_name" name="last_name" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="middle_name" class="form-label">Middle Name:</label>
+                            <input type="text" id="middle_name" name="middle_name" class="form-control">
+                        </div>
+                        <!-- ✅ Added Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email:</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label for="preferred_initial" class="form-label">Preferred Initial:</label>
+                            <input type="text" id="preferred_initial" name="preferred_initial" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="extension_name" class="form-label">Extension Name:</label>
+                            <input type="text" id="extension_name" name="extension_name" class="form-control">
+                        </div>
+
+                        <!-- Profile Info -->
+                        <div class="mb-3">
+                            <label for="rank" class="form-label">Rank:</label>
+                            <input type="text" id="rank" name="rank" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="sub_svc" class="form-label">Sub-Service:</label>
+                            <input type="text" id="sub_svc" name="sub_svc" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="position" class="form-label">Position:</label>
+                            <input type="text" id="position" name="position" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="gender" class="form-label">Gender:</label>
+                            <select id="gender" name="gender" class="form-select form-control" required>
+                                <!-- Options populated by jQuery -->
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="birth_date" class="form-label">Birth Date:</label>
+                            <input type="date" id="birth_date" name="birth_date" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="contact_number" class="form-label">Contact Number:</label>
+                            <input type="text" id="contact_number" name="contact_number" class="form-control" maxlength="11">
+                        </div>
+
+                        <!-- Classification & Designations -->
+                        <div class="mb-3">
+                            <label for="classification" class="form-label">Classification:</label>
+                            <select id="classification" name="classification" class="form-select select2">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="designations" class="form-label">Designations:</label>
+                            <select id="designations" name="designations" class="form-select select2" multiple>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+
+                        <!-- Organizations -->
+                        <div class="mb-3">
+                            <label for="organizations" class="form-label">Organizations:</label>
+                            <select id="organizations" name="organizations" class="form-select select2" multiple required>
+                                <!-- Options populated dynamically -->
+                            </select>
+                        </div>
+
+                        <!-- Display Name Format -->
+                        <div class="mb-3">
+                            <label for="display_name_format" class="form-label">Display Name Format:</label>
+                            <select id="display_name_format" name="display_name_format" class="form-select">
+                                <option value="title">Title Case (John De La Cruz)</option>
+                                <option value="camel">Upper Camel Case (JohnDeLaCruz)</option>
+                                <option value="upper">UPPERCASE (JOHN DE LA CRUZ)</option>
+                                <option value="lower">lowercase (john de la cruz)</option>
+                            </select>
+                        </div>
+
+                        <!-- Bio -->
+                        <div class="mb-3">
+                            <label for="bio" class="form-label">Bio:</label>
+                            <textarea id="bio" name="bio" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-left">
+                            <button type="submit" class="btn btn-primary btn-sm me-2">
+                                <i class="fas fa-save"></i> Update Profile
+                            </button>
+                            <a href="{% url 'users:profile_view' %}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Select2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script src="{% static 'js/utils/swal-messages.js' %}"></script>
+
+<script src="{% static 'js/users/profile/update.js' %}"></script>
+<script src="{% static 'js/organization/get-all-organization.js' %}"></script>
+<script src="{% static 'js/users/profile/get-current-profile.js' %}"></script>
+<script>
+$(document).ready(function() {
+    // Init Select2
+    $(".select2").select2();
+
+    // Load orgs when page loads
+    loadOrganizations();
+
+    // Load user data
+    getUserData();
+
+    // Handle form submit
+    $('#updateProfileForm').on('submit', function(event) {
+        event.preventDefault();
+        updateUserData();
+    });
+});
+</script>
+{% endblock %}

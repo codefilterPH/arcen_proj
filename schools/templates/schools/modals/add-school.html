@@ -1,0 +1,60 @@
+{% load static %}
+<!-- Add School Modal -->
+<div class="modal fade" id="addSchoolModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-school me-2 text-primary"></i> Add School
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Body -->
+      <form id="addSchoolForm" enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+        <div class="modal-body">
+
+          <!-- Name -->
+          <div class="mb-3">
+            <label for="schoolName" class="form-label">School Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="schoolName" name="name" placeholder="Enter school name" required>
+          </div>
+
+          <!-- Address -->
+          <div class="mb-3">
+            <label for="schoolAddress" class="form-label">Address</label>
+            <textarea class="form-control" id="schoolAddress" name="address" rows="3" placeholder="Enter address (optional)"></textarea>
+          </div>
+
+          <!-- Logo -->
+          <div class="mb-3">
+            <label for="schoolLogo" class="form-label">Logo</label>
+            <input type="file" class="form-control" id="schoolLogo" name="logo" accept="image/*">
+            <div class="form-text">Upload the logo of the school (optional)</div>
+          </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times mr-1"></i> Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save mr-1"></i> Save School
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'js/schools/add-school.js' %}"></script>
+<script>
+    $(document).ready(function() {
+         initializeAddSchoolForm();
+    });
+</script>

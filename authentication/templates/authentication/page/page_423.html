@@ -1,0 +1,96 @@
+{% extends "exam/partials/base_without_nav.html" %}
+
+{% block title %}Page Locked{% endblock %}
+
+{% block body_class %}template-423{% endblock %}
+{% block extra_css %}
+<style>
+/* 423 Locked Page Styles */
+.template-423 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f9f9f9; /* Light background color */
+    font-family: 'Arial', sans-serif; /* Change to your preferred font */
+}
+
+.container {
+    text-align: center;
+}
+
+.error-message {
+    max-width: 600px;
+    padding: 20px;
+    background-color: #fff; /* White background for the message box */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
+
+.error-title {
+    font-size: 72px; /* Large font size for the error code */
+    color: #e74c3c; /* Color for the error code */
+    margin: 0;
+}
+
+.error-subtitle {
+    font-size: 36px; /* Subtitle font size */
+    color: #333; /* Darker text color */
+}
+
+.glitch-text {
+    font-size: 24px; /* Increase font size */
+    color: #2ecc71; /* Change color to green */
+    position: relative;
+    display: inline-block; /* Allows for positioning */
+    animation: glitch-animation 1.5s infinite; /* Glitch effect animation */
+    text-shadow:
+        -1px 0 red,
+        1px 0 blue,
+        0 1px red,
+        0 -1px blue; /* Colorful shadows for glitch effect */
+}
+
+@keyframes glitch-animation {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, -2px); }
+    40% { transform: translate(2px, 2px); }
+    60% { transform: translate(-2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+}
+
+.error-description {
+    font-size: 18px; /* Description font size */
+    color: #666; /* Lighter text color */
+    margin: 10px 0 20px;
+}
+
+.error-home-link {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #3498db; /* Button color */
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.error-home-link:hover {
+    background-color: #2980b9; /* Darker button color on hover */
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="text-center">
+    <div class="container mt-5 mb-5">
+        <div class="error-message">
+            <h1 class="error-title">423</h1>
+            <h2 class="error-subtitle">Page Locked</h2>
+            <p class="glitch-text">Access Denied: This page is locked...</p>
+            <p class="error-description">Sorry, you cannot access this page at the moment. Please contact support or go back to the homepage.</p>
+            <a href="{% url 'dashboard' %}" class="error-home-link">Go to Homepage</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
