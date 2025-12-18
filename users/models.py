@@ -6,7 +6,7 @@ from django.core.files.base import ContentFile
 import random
 import qrcode
 import io, base64
-
+import json
 
 class Designation(models.Model):
     """Represents an official designation/role a user can have."""
@@ -36,6 +36,8 @@ class Organization(models.Model):
 class Classification(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
+    def __str__(self):
+        return self.name
 
 class UserProfile(models.Model):
     GENDER_CHOICES = [
@@ -75,7 +77,7 @@ class UserProfile(models.Model):
     )
 
     email_verified = models.BooleanField(default=False)
-    contact_number = models.CharField(max_length=11, blank=True, null=True)
+    contact_number = models.CharField(max_length=20, blank=True, null=True)
     last_activity = models.DateTimeField(default=timezone.now)
     last_password_reset = models.DateTimeField(default=timezone.now)
 
@@ -94,6 +96,10 @@ class UserProfile(models.Model):
         help_text="Controls how the user's display name is formatted"
     )
     qr_code = models.TextField(blank=True, null=True)
+    address = models.TextField(blank=True, null=True, verbose_name="Address")
+    city = models.CharField(max_length=100, blank=True, null=True)
+    province = models.CharField(max_length=250, blank=True, null=True)
+    course = models.CharField(max_length=500, blank=True, null=True)
 
     def clean(self):
         """Ensure default organization is among assigned organizations."""
@@ -103,41 +109,91 @@ class UserProfile(models.Model):
             })
 
     def generate_qr_code(self, force=False):
-        """Generate or regenerate a QR code as Base64 PNG string."""
+        """Generate QR with JSON payload using AUTH USER ID but NO ORGANIZATION."""
         if self.qr_code and not force:
-            return  # keep existing QR unless forced
+            return
 
+        # Build profile picture URL
+        if self.profile_picture:
+            profile_pic_url = self.profile_picture.url
+        else:
+            profile_pic_url = (
+                f"/static/img/users/avatars/{self.default_avatar}"
+                if self.default_avatar else ""
+            )
+
+        # Build QR JSON payload (NO organization)
+        qr_payload = {
+            "user_id": self.user.id,  # 🔥 Django user ID
+            "name": str(self),  # 🔥 formatted via __str__
+            "rank": self.rank or "",
+            "contact_number": self.contact_number or "",
+            "address": self.address or "",
+            "city": self.city or "",
+            "province": self.province or "",
+            "classification": (
+                self.classification.name if self.classification else ""
+            ),
+            "profile_picture": profile_pic_url,  # 🔥 picture URL included
+        }
+
+        qr_text = json.dumps(qr_payload)
+
+        # Create QR
         qr = qrcode.QRCode(
-            version=1,
+            version=4,
             error_correction=qrcode.constants.ERROR_CORRECT_H,
             box_size=10,
             border=4,
         )
-        qr.add_data(str(self.user.id))
+        qr.add_data(qr_text)
         qr.make(fit=True)
 
-        img = qr.make_image(fill_color="black", back_color="white")
+        qr_img = qr.make_image(fill_color="black", back_color="white").convert("RGB")
 
         buffer = io.BytesIO()
-        img.save(buffer, format="PNG")
+        qr_img.save(buffer, format="PNG")
         base64_qr = base64.b64encode(buffer.getvalue()).decode("utf-8")
         buffer.close()
 
-        # Save base64 string into qr_code field
         self.qr_code = base64_qr
 
     def save(self, *args, **kwargs):
+
+        # Normalize initials
         if self.preferred_initial:
             self.preferred_initial = self.preferred_initial.upper()
 
-        self.clean()
-        super().save(*args, **kwargs)  # save first (so user.id exists)
+        # Detect if QR should be regenerated
+        regenerate_qr = False
 
-        # Ensure QR exists after save
-        if not self.qr_code:
-            self.generate_qr_code()
+        if self.pk:
+            old = UserProfile.objects.filter(pk=self.pk).first()
+
+            # Check fields included in QR
+            fields_to_watch = [
+                "rank", "contact_number", "address",
+                "city", "province", "default_avatar",
+                "profile_picture", "classification_id",
+                "display_name_format"
+            ]
+
+            for field in fields_to_watch:
+                if getattr(old, field) != getattr(self, field):
+                    regenerate_qr = True
+                    break
+
+            # Check user first/last name
+            if old.user.first_name != self.user.first_name or old.user.last_name != self.user.last_name:
+                regenerate_qr = True
+
+        # Save the profile first
+        super().save(*args, **kwargs)
+
+        # Regenerate QR if needed
+        if regenerate_qr or not self.qr_code:
+            self.generate_qr_code(force=True)
             super().save(update_fields=["qr_code"])
-
 
     @property
     def get_profile_picture_url(self):

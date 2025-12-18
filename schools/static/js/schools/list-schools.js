@@ -30,15 +30,9 @@ function loadSchools(page = 1, search = "") {
                     <p class="text-muted text-center">${school.address || "No address provided."}</p>
                     <div class="row g-2 mt-3">
                       <div class="col-6 col-sm-3">
-                        <a class="btn btn-sm btn-info w-100 btn-profile"
-                           title="Profile"
-                           data-bs-toggle="modal"
-                           data-bs-target="#schoolProfileModal"
-                           data-name="${school.name}"
-                           data-address="${school.address || ''}"
-                           data-logo="${logo}"
-                           data-created="${school.created_at}"
-                           data-updated="${school.updated_at}">
+                        <a href="/schools/${school.slug}/profile/"
+                           class="btn btn-sm btn-info w-100 btn-profile"
+                           title="Profile">
                           <i class="fas fa-id-badge"></i>
                         </a>
                       </div>
@@ -54,6 +48,18 @@ function loadSchools(page = 1, search = "") {
                                data-school-name="${school.name}">
                               <i class="fas fa-user-graduate"></i>
                             </a>
+                      </div>
+
+                      <div class="col-6 col-sm-3">
+                          <a href="#"
+                             class="btn btn-sm btn-dark w-100 text-white"
+                             title="Manage Academic Year"
+                             data-school-id="${school.id}"
+                             data-school-name="${school.name}"
+                             data-bs-toggle="modal"
+                             data-bs-target="#schoolYearModal">
+                            <i class="fas fa-calendar-alt"></i>
+                          </a>
                       </div>
 
                       <div class="col-6 col-sm-3">

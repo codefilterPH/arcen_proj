@@ -4,10 +4,13 @@ from django.db import models
 from django.db import models
 from django.contrib.auth.models import User
 from auditlog.registry import auditlog
+from django.utils.text import slugify
 
 class SchoolOrg(models.Model):
     """A school or organization that admits students."""
     name = models.CharField(max_length=255, unique=True)
+    slug = models.SlugField(max_length=255, blank=True, null=True)
+
     address = models.TextField(blank=True, null=True)
     logo = models.ImageField(
         upload_to="schools/logos/",
@@ -18,19 +21,41 @@ class SchoolOrg(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        base_slug = slugify(self.name)
+        new_slug = base_slug
+        counter = 1
+
+        # Only regenerate if slug is empty OR name changed
+        if not self.slug or self.slug != base_slug:
+            while SchoolOrg.objects.filter(slug=new_slug).exclude(pk=self.pk).exists():
+                new_slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = new_slug
+
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
 class SchoolYear(models.Model):
-    """Academic year, e.g., 2025-2026."""
-    school = models.ForeignKey(SchoolOrg, on_delete=models.CASCADE, related_name="school_years")
-    name = models.CharField(max_length=20)  # e.g., "2025-2026"
+    """School year, e.g., 2025-2026."""
+    school = models.ForeignKey(
+        SchoolOrg,
+        on_delete=models.CASCADE,
+        related_name="school_years"
+    )
+    name = models.CharField(max_length=20, help_text="Example: 2025-2026")
     start_date = models.DateField()
     end_date = models.DateField()
 
+    class Meta:
+        verbose_name = "School Year"
+        verbose_name_plural = "School Years"
+        ordering = ["-start_date"]
+
     def __str__(self):
         return f"{self.school.name} - {self.name}"
-
 
 class Semester(models.Model):
     """Each school year is divided into semesters."""

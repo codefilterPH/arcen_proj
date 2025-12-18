@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     'attendance',
     'schools',
     'users',
-    'qrscanner',
     'dashboard',
     'student',
     # THIRD PARTY

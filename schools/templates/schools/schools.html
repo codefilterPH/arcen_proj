@@ -98,8 +98,9 @@
     </main>
   </div>
 </div>
-
-<!-- Add School Modal -->
+{% include 'acad-year/edit-school-year.html' %}
+{% include 'acad-year/add-school-year.html' %}
+{% include 'acad-year/acad-year-modal.html' %}
 {% include 'student/modals/add-student-modal.htm' %}
 {% include 'schools/modals/add-school.html' %}
 {% include 'school-metric/metric-modal.html' %}
@@ -115,9 +116,10 @@
   $(document).ready(function() {
 
     // When the modal closes
-    $('#addParticipantModal').on('hidden.bs.modal', function () {
-        location.reload();
-    });
+    // $('#addParticipantModal').on('hidden.bs.modal', function () {
+    //     location.reload();
+    // });
+
 
   });
 </script>

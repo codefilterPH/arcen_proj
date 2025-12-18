@@ -6,17 +6,12 @@
     <div class="modal-content rounded-lg shadow-lg">
 
       <!-- Header -->
-      <div class="modal-header bg-blue-600 text-white rounded-t-lg px-4 py-2 flex items-center justify-between">
-        <h5 class="modal-title text-lg font-semibold flex items-center gap-2" id="addParticipantModalLabel">
+      <div class="modal-header bg-blue-600 text-white rounded-t-lg px-4 py-2 d-flex align-items-center justify-content-between">
+        <h5 class="modal-title text-lg fw-semibold d-flex align-items-center gap-2" id="addParticipantModalLabel">
           <i class="fas fa-user-plus text-white text-m"></i>
-          Add Participants
+          Add Student
         </h5>
-        <button type="button"
-                class="text-white hover:text-gray-200 transition"
-                data-bs-dismiss="modal"
-                aria-label="Close">
-          <i class="fas fa-times text-lg"></i>
-        </button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
       <!-- Body -->
@@ -24,55 +19,44 @@
 
         <!-- 🔹 Dropdown + Add Button -->
         <div class="mb-4">
-          <label for="participantSelect" class="block text-sm font-medium text-gray-700 mb-1">
-            Select User
-          </label>
-          <div class="flex items-center gap-2">
+          <label for="participantSelect" class="form-label fw-semibold">Select User</label>
+          <div class="d-flex align-items-center gap-2">
             <!-- Dropdown -->
-            <div class="relative flex-grow">
-              <select id="participantSelect"
-                      class="w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none px-3 py-2 text-sm"
-                      required>
+            <div class="position-relative flex-grow-1">
+              <select id="participantSelect" class="form-select" required>
                 <!-- Options loaded dynamically -->
               </select>
-              <!-- Spinner -->
-              <div id="spinnerParticipant"
-                   class="hidden absolute right-3 top-1/2 -translate-y-1/2">
-                <div class="spinner-border text-blue-500"></div>
+              <div id="spinnerParticipant" class="d-none position-absolute end-0 top-50 translate-middle-y me-3">
+                <div class="spinner-border text-primary spinner-border-sm"></div>
               </div>
             </div>
 
             <!-- Add Button -->
-            <button type="button"
-                    id="btnAddToTable"
-                    class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white rounded-md p-2 transition">
-              <i class="fas fa-user-plus text-white text-lg"></i>
+            <button type="button" id="btnAddToTable" class="btn btn-success d-flex align-items-center justify-content-center">
+              <i class="fas fa-user-plus"></i>
             </button>
           </div>
 
           <!-- Messages -->
-          <p id="participantMessage" class="text-sm text-red-500 mt-2"></p>
-          <p id="participantInfo" class="text-sm text-gray-500 mt-1"></p>
+          <p id="participantMessage" class="text-danger small mt-2"></p>
         </div>
 
         <!-- 🔹 Selected Participants Table -->
-        <div class="mt-6">
-          <h6 class="font-semibold text-gray-700 flex items-center gap-2">
-            <i class="fas fa-users text-blue-600"></i>
+        <div class="mt-4">
+          <h6 class="fw-semibold text-dark d-flex align-items-center gap-2">
+            <i class="fas fa-users text-primary"></i>
             Selected Participants
           </h6>
-          <div class="overflow-x-auto mt-3">
-            <table class="min-w-full border border-gray-200 text-sm text-gray-700" id="participantsTable">
-              <thead class="bg-gray-100">
+          <div class="table-responsive mt-2">
+            <table class="table table-sm table-bordered align-middle" id="participantsTable">
+              <thead class="table-light">
                 <tr>
-                  <th class="w-12 text-center py-2 border-b">#</th>
-                  <th class="text-left py-2 border-b">Name</th>
-                  <th class="w-16 text-center py-2 border-b">Action</th>
+                  <th class="text-center" style="width: 50px;">#</th>
+                  <th>Name</th>
+                  <th class="text-center" style="width: 80px;">Action</th>
                 </tr>
               </thead>
-              <tbody>
-                <!-- Rows will be dynamically appended -->
-              </tbody>
+              <tbody></tbody>
             </table>
           </div>
         </div>
@@ -80,16 +64,12 @@
       </div>
 
       <!-- Footer -->
-      <div class="modal-footer flex justify-end gap-0 bg-gray-50 rounded-b-lg p-3">
-        <button type="button"
-                class="inline-flex items-center justify-center bg-gray-500 hover:bg-gray-600 text-white rounded-md p-2 transition"
-                data-bs-dismiss="modal">
-          <i class="fas fa-times text-white text-lg"></i>
+      <div class="modal-footer d-flex justify-content-end bg-light rounded-bottom p-3">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times me-1"></i> Cancel
         </button>
-        <button type="button"
-                id="btnSaveAllParticipants"
-                class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-md p-2 transition">
-          <i class="fas fa-save text-white text-lg"></i>
+        <button type="button" id="btnSaveAllParticipants" class="btn btn-primary">
+          <i class="fas fa-save me-1"></i> Save All
         </button>
       </div>
 
@@ -98,13 +78,14 @@
 </div>
 
 {% block extra_js %}
-<script src="{% static 'js/student/load-students.js' %}"></script>
+<!-- Core JS dependencies -->
+
+<script src="{% static 'js/student/add-students.js' %}"></script>
 <script src="{% static 'js/student/actions.js' %}"></script>
+<script src="{% static 'js/student/load-users.js' %}"></script>
 <script>
   $(document).ready(function() {
-    $('#addParticipantModal').on('shown.bs.modal', function () {
-      loadUsers();  // Load users when modal opens
-    });
+    loadUsers();
   });
 </script>
 {% endblock %}

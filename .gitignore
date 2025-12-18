@@ -186,6 +186,7 @@ static
 !school/static/
 !users/static/
 !authentication/__pycache__/
+/users/static_/data/rotc_1st_2025_2026.xlsx
 
 __pycache__/
 
@@ -196,3 +197,4 @@ private_media
 /private_media/
 /private_media
 private_media/
+

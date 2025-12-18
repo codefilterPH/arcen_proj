@@ -60,6 +60,8 @@ class UserListViewSet(viewsets.ViewSet):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+
 class ClassificationViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint to view all classifications (for dropdowns).
@@ -154,6 +156,27 @@ class ManageUsers(viewsets.ViewSet):
         print(f'RESPONSE: {response}')  # Print the final response before sending it
 
         return Response(response, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'], url_path='qr')
+    def get_user_qr(self, request, pk=None):
+        # pk is now the userprofile.id
+        try:
+            profile = UserProfile.objects.get(pk=pk)
+        except UserProfile.DoesNotExist:
+            return Response({"error": "UserProfile not found."}, status=404)
+
+        # Ensure QR exists
+        if not profile.qr_code:
+            profile.generate_qr_code(force=True)
+            profile.save(update_fields=["qr_code"])
+
+        return Response({
+            "userprofile_id": profile.id,
+            "user_id": profile.user.id,
+            "full_name": str(profile),
+            "qr_base64": profile.qr_code,
+        })
+
 
 class UserProfileViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet to retrieve and update the authenticated user's profile."""

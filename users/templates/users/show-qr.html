@@ -1,0 +1,44 @@
+{% load static %}
+<style>
+    #qrModalImage {
+       width: 100%;
+    }
+</style>
+<div class="modal fade" id="qrCodeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-md"> <!-- Wider -->
+    <div class="modal-content">
+
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title"><i class="fas fa-qrcode me-2"></i>User QR Code</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body text-center">
+
+        <div class="d-flex justify-content-center w-100">
+            <img id="qrModalImage"
+                 class="img-fluid"
+                 style="max-width:400px; width:100%; height:auto; border:1px solid #ccc; border-radius:10px;">
+        </div>
+        <!-- USER NAME -->
+        <h5 id="qrModalName" class="mt-3 fw-bold text-dark"></h5>
+
+      </div>
+
+      <div class="modal-footer justify-content-between">
+
+        <!-- ⬇️ DOWNLOAD BUTTON -->
+        <button id="btnDownloadQR" class="btn btn-success">
+          <i class="fas fa-download me-1"></i> Download QR
+        </button>
+
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'js/users/get-qr-image.js' %}"></script>

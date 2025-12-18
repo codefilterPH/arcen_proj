@@ -1,6 +1,6 @@
 from django.views.generic import ListView
 from .models import SchoolOrg
-from django.views.generic import CreateView
+from django.views.generic import CreateView, DetailView
 from django.urls import reverse_lazy
 from schools.forms import SchoolOrgForm
 from django.contrib import messages
@@ -10,7 +10,14 @@ class SchoolListView(ListView):
     template_name = "schools/schools.html"
     context_object_name = "schools"
     ordering = ["name"]  # optional: sort alphabetically
-#
+
+class SchoolProfileView(DetailView):
+    model = SchoolOrg
+    template_name = "schools/school_profile.html"
+    context_object_name = "school"
+    slug_field = "slug"           # model field to match
+    slug_url_kwarg = "slug"       # URL param name
+
 # class SchoolOrgCreateView(CreateView):
 #     model = SchoolOrg
 #     form_class = SchoolOrgForm

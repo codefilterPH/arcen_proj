@@ -1,0 +1,82 @@
+{% load static %}
+
+<!-- Edit School Year Modal -->
+<div class="modal fade" id="editSchoolYearModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-edit me-2 text-warning"></i> Edit School Year
+        </h5>
+        <button type="button" id="btnCloseEditModal" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Body -->
+      <form id="editSchoolYearForm">
+        {% csrf_token %}
+        <div class="modal-body">
+          <!-- Hidden ID -->
+          <input type="hidden" id="editYearId" name="id">
+
+          <!-- Name -->
+          <div class="mb-3">
+            <label for="editYearName" class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
+            <input type="text" id="editYearName" name="name" class="form-control" placeholder="e.g. 2025–2026" required>
+          </div>
+
+          <!-- Start Date -->
+          <div class="mb-3">
+            <label for="editYearStart" class="form-label fw-semibold">Start Date <span class="text-danger">*</span></label>
+            <input type="date" id="editYearStart" name="start_date" class="form-control" required>
+          </div>
+
+          <!-- End Date -->
+          <div class="mb-3">
+            <label for="editYearEnd" class="form-label fw-semibold">End Date <span class="text-danger">*</span></label>
+            <input type="date" id="editYearEnd" name="end_date" class="form-control" required>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btnCancelAddYear" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i> Cancel
+          </button>
+          <button type="submit" class="btn btn-warning">
+            <i class="fas fa-save me-1"></i> Update Year
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'js/acad-years/edit-years.js' %}"></script>
+<script>
+  $(document).ready(function() {
+    initializeEditSchoolYearForm();
+
+    $("#btnCancelAddYear").on("click", function () {
+      console.log("[SCHOOL YEAR] Cancel clicked — closing add modal and reopening list");
+
+      // 🔹 Step 1: Blur the currently focused element
+      document.activeElement.blur();
+
+      // 🔹 Step 2: Hide the add modal
+      $("#editSchoolYearModal").modal("hide");
+
+      // 🔹 Step 3: Wait until it's fully hidden before showing the next one
+      $("#editSchoolYearModal").on("hidden.bs.modal", function () {
+        $("#schoolYearModal").modal("show");
+      });
+    });
+
+    // Optional: hide parent modal when opening Add modal
+    $("#editSchoolYearModal").on("show.bs.modal", function () {
+      $("#schoolYearModal").modal("hide");
+    });
+
+  });
+</script>

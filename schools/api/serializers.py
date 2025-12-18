@@ -1,6 +1,26 @@
 from rest_framework import serializers
 from schools.models import SchoolOrg
 
+
+# serializers.py
+from rest_framework import serializers
+from schools.models import SchoolYear
+
+class SchoolYearSerializer(serializers.ModelSerializer):
+    school_name = serializers.CharField(source='school.name', read_only=True)
+
+    class Meta:
+        model = SchoolYear
+        fields = [
+            'id',
+            'school',
+            'school_name',
+            'name',
+            'start_date',
+            'end_date',
+        ]
+
+
 class SchoolOrgSerializer(serializers.ModelSerializer):
     """Serializer for SchoolOrg model."""
 
@@ -11,6 +31,7 @@ class SchoolOrgSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'name',
+            'slug',
             'address',
             'logo',       # for upload
             'logo_url',   # for display (absolute URL)

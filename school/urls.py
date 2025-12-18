@@ -22,11 +22,13 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     # path("", RedirectView.as_view(url="/dashboard/", permanent=False)),
-    path('admin/', admin.site.urls),
+    path('admin/try-me/', admin.site.urls),
     path('', include('authentication.urls')),
     path('', include('dashboard.urls')),
     path('', include('users.urls')),
     path('', include('schools.urls')),
+    path('', include('student.urls')),
+    path('', include('attendance.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

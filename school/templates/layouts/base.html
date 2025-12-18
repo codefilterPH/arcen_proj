@@ -54,6 +54,7 @@
     <div id="layoutSidenav">
         <!-- SIDENAV HERE -->
         {% block sidebar %} {% include "includes/sidenav.html" %} {% endblock %}
+        {% block content %}
          <!-- MAIN CONTENT -->
          <main id="mainContent" class="container-fluid p-4">
               <!-- Dashboard -->
@@ -71,7 +72,7 @@
               </div>
          </main>
 
-
+         {% endblock %}
         <!-- FOOTER HERE -->
 
     </div>

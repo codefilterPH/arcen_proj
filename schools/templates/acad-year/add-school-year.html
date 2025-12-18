@@ -1,0 +1,83 @@
+{% load static %}
+
+<!-- Add School Year Modal -->
+<div class="modal fade" id="addSchoolYearModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-calendar-plus me-2 text-success"></i> Add School Year
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Body -->
+      <form id="addSchoolYearForm" method="post">
+        {% csrf_token %}
+        <div class="modal-body">
+
+          <!-- Name -->
+          <div class="mb-3">
+            <label for="yearName" class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
+            <input type="text" id="yearName" name="name" class="form-control" placeholder="e.g. 2025–2026" required>
+          </div>
+
+          <!-- Start Date -->
+          <div class="mb-3">
+            <label for="yearStart" class="form-label fw-semibold">Start Date <span class="text-danger">*</span></label>
+            <input type="date" id="yearStart" name="start_date" class="form-control" required>
+          </div>
+
+          <!-- End Date -->
+          <div class="mb-3">
+            <label for="yearEnd" class="form-label fw-semibold">End Date <span class="text-danger">*</span></label>
+            <input type="date" id="yearEnd" name="end_date" class="form-control" required>
+          </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i> Cancel
+          </button>
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-save me-1"></i> Save Year
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% block extra_js %}
+<!-- JS -->
+<script src="{% static 'js/acad-years/add-years.js' %}"></script>
+
+<script>
+$(document).ready(function () {
+  $("#btnCancelAddYear").on("click", function () {
+    console.log("[SCHOOL YEAR] Cancel clicked — closing add modal and reopening list");
+
+    // 🔹 Step 1: Blur the currently focused element
+    document.activeElement.blur();
+
+    // 🔹 Step 2: Hide the add modal
+    $("#addSchoolYearModal").modal("hide");
+
+    // 🔹 Step 3: Wait until it's fully hidden before showing the next one
+    $("#addSchoolYearModal").on("hidden.bs.modal", function () {
+      $("#schoolYearModal").modal("show");
+    });
+  });
+
+  // Optional: hide parent modal when opening Add modal
+  $("#addSchoolYearModal").on("show.bs.modal", function () {
+    $("#schoolYearModal").modal("hide");
+  });
+});
+
+</script>
+{% endblock %}
