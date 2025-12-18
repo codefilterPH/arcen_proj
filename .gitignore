@@ -181,7 +181,7 @@ static
 !attendance/static/
 !dashboard/static/
 !emails/static/
-!qrscanner/static/
+!student/static/
 !schools/static/
 !school/static/
 !users/static/

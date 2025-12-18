@@ -4,12 +4,17 @@ from django.views.generic import CreateView, DetailView
 from django.urls import reverse_lazy
 from schools.forms import SchoolOrgForm
 from django.contrib import messages
+from django.views.generic import TemplateView
+
 
 class SchoolListView(ListView):
     model = SchoolOrg
     template_name = "schools/schools.html"
     context_object_name = "schools"
     ordering = ["name"]  # optional: sort alphabetically
+
+class TestView(TemplateView):
+    template_name = "schools/test.html"
 
 class SchoolProfileView(DetailView):
     model = SchoolOrg
