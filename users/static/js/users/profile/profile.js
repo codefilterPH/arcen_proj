@@ -2,15 +2,15 @@ function setProfilePicture(profilePictureSrc, imageElementId, fallbackTextElemen
     const img = $("#" + imageElementId);
     const fallbackText = $("#" + fallbackTextElementId);
 
-    console.log("Setting profile picture...");
+    //console.log("Setting profile picture...");
 
     // Set image or fallback text based on whether the profile picture exists
     if (profilePictureSrc) {
-        console.log("Profile picture source found: " + profilePictureSrc);
+        // console.log("Profile picture source found: " + profilePictureSrc);
         img.attr("src", profilePictureSrc).show();
         fallbackText.hide();
     } else {
-        console.log("No profile picture found, showing fallback text.");
+        //console.log("No profile picture found, showing fallback text.");
         img.hide();
         fallbackText.text("No profile picture uploaded").show();
     }
@@ -22,167 +22,184 @@ function setProfilePicture(profilePictureSrc, imageElementId, fallbackTextElemen
         "object-fit": "cover"
     });
 
-    console.log("Profile picture settings applied: Image size set to 150x150px, object-fit set to cover.");
+    // console.log("Profile picture settings applied: Image size set to 150x150px, object-fit set to cover.");
 }
 
 function setSignature(signatureSrc, signatureElementId, fallbackTextElementId) {
     const signatureImg = $("#" + signatureElementId);
     const noSignatureText = $("#" + fallbackTextElementId);
 
-    console.log("Setting signature...");
+    // console.log("Setting signature...");
 
     if (signatureSrc) {
-        console.log("Signature found: " + signatureSrc);
+        //console.log("Signature found: " + signatureSrc);
         signatureImg.attr("src", signatureSrc).show();
         noSignatureText.hide();
     } else {
-        console.log("No signature found, showing fallback text.");
+        // console.log("No signature found, showing fallback text.");
         signatureImg.hide();
         noSignatureText.show();
     }
 }
 
 function getProfile() {
-    var accessToken = localStorage.getItem('accessToken');
-    console.log("Access token fetched from localStorage: " + accessToken);
+    const accessToken = localStorage.getItem('accessToken');
 
     $.ajax({
         type: 'GET',
-        url: '/api/user-profile/',  // Ensure this URL is correct
-        beforeSend: function(xhr) {
+        url: '/api/user-profile/',
+        beforeSend: function (xhr) {
             xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-            console.log("Authorization header set: Bearer " + accessToken);
         },
-        success: function(response) {
-            console.log('GET PROFILE RESPONSE: ', response);
+        success: function (response) {
 
-            // Check if response contains the user data
-            if (response.length > 0) {
-                const userData = response.results[0];
-                console.log('USER DATA: ', userData);
+            if (!response || !response.results || !response.results.length) {
+                console.warn('Empty profile response');
+                return;
+            }
 
-                if (userData.is_authenticated === true) {
-                    $("#name").html("<strong>Full Name:</strong> " + (userData.profile_str || "Not provided"));
-                    $("#preferred_initial").html("<strong>Preferred Initial:</strong> " + (userData.profile.preferred_initial_display || "Not provided"));
-                    $("#username").html(userData.username || "No username");
-                    $("#position").html(userData.profile.position || "No position");
-                    $("#bio").html(userData.profile.bio || "No bio provided");
+            const userData = response.results[0];
 
-                    // Gender logic
-                    $("#gender").html(function() {
-                        const genderText = userData.profile.gender_display;
-                        console.log("Gender text: ", genderText);
+            if (!userData.is_authenticated) {
+                window.location.href = '/accounts/login/';
+                return;
+            }
 
-                        if (genderText === 'M' || genderText === 'm') {
-                            return "<strong>Gender:</strong> Male";
-                        } else if (genderText === 'F' || genderText === 'f') {
-                            return "<strong>Gender:</strong> Female";
-                        } else {
-                            return "<strong>Gender:</strong> No Gender";
-                        }
-                    });
+            /* =========================
+               BASIC PROFILE INFO
+            ========================= */
 
-                    $("#email").html("<strong>Email:</strong> " + userData.email);
-                    $("#dateJoined").html("<strong>Joined:</strong> " + userData.date_joined);
+            if ($('#name').length) {
+                $('#name').html(`<strong>Full Name:</strong> ${userData.profile_str || '—'}`);
+            }
 
-                    // Profile Picture
-                    const profilePictureSrc = userData.profile.profile_picture;
-                    console.log('Profile picture path: ', profilePictureSrc);
-                    setProfilePicture(profilePictureSrc, "profilePic", "noProfilePicText");
+            if ($('#username').length) {
+                $('#username').text(userData.username || '—');
+            }
 
-                    // Signature
-                    const signature = userData.profile.signature;
-                    console.log('Signature: ', signature);
-                    setSignature(signature, "signaturePic", "noSignatureText");
+            if ($('#position').length) {
+                $('#position').html(`<strong>Position:</strong> ${userData.profile.position || '—'}`);
+            }
 
-                    // Family Information
-                    const family = userData.profile.family;
-                    console.log('Family data: ', family);
-                    const memberList = $("#containerMember");
-                    const addMemberBtn = $("#btnAddMember");
+            if ($('#bio').length) {
+                $('#bio').text(userData.profile.bio || 'No bio provided');
+            }
 
-                    if (family && family.id) {
-                        console.log('Family ID found: ' + family.id);
-                        $('#family_id').val(family.id);
+            if ($('#email').length) {
+                $('#email').html(`<strong>Email:</strong> ${userData.email}`);
+            }
 
-                        // Set the edit button's href dynamically
-                        const editUrl = `/family/${family.id}/edit/`;
-                        $('#btnEditFamily').attr('href', editUrl).show();
-                        $('#btnCreateFamily').hide();
+            if ($('#dateJoined').length) {
+                $('#dateJoined').html(`<strong>Joined:</strong> ${userData.date_joined}`);
+            }
 
-                        // Show Add Member button
-                        const addMemberUrl = `/family/${family.id}/member/add/`;
-                        addMemberBtn.attr('href', addMemberUrl).show();
+            /* =========================
+               GENDER (SAFE)
+            ========================= */
+            if ($('#gender').length) {
+                const gender = userData.profile.gender_display;
+                console.log("GENDER: ", gender);
+                let genderText = 'No Gender';
 
-                        // Fill in the family info table
-                        $(".card-body table tbody").html(`
-                            <tr><th scope="row">Family Name</th><td>${family.name || '—'}</td></tr>
-                            <tr><th scope="row">Description</th><td>${family.description || '—'}</td></tr>
-                            <tr><th scope="row">Created By</th><td>${family.is_owner ? 'You' : 'Not Available'}</td></tr>
-                            <tr><th scope="row">Created At</th><td>${family.created_at || '—'}</td></tr>
-                        `);
+                if (gender === 'M') genderText = 'Male';
+                if (gender === 'F') genderText = 'Female';
 
-                        // Populate member list
-                        memberList.empty();
-                        if (Array.isArray(family.members) && family.members.length > 0) {
-                            family.members.forEach(member => {
-                                const avatarUrl = member.avatar_url || `/static/img/users/avatars/${member.default_avatar || 'default.png'}`;
-                                memberList.append(`
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div class="d-flex align-items-center">
-                                            <img src="${avatarUrl}" class="rounded-circle me-3 mr-1" alt="Avatar" width="40" height="40">
-                                            <div>
-                                                <strong>${member.full_name}</strong><br>
-                                                <small class="text-muted">${member.role || 'No role'}</small>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex gap-1">
-                                            <a href="/family/member/${member.id}/edit/" class="btn btn-sm btn-outline-primary mr-1" title="Edit Member">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form method="post" action="/family/member/${member.id}/remove/">{% csrf_token %}
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove Member">
-                                                    <i class="fas fa-user-minus"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </li>
-                                `);
-                            });
-                        } else {
-                            memberList.html(`<li class="list-group-item text-center text-muted">No family members found.</li>`);
-                        }
+                $('#gender').html(`<strong>Gender:</strong> ${genderText}`);
+            }
 
-                    } else {
-                        console.log('No family found, showing default message.');
-                        // No family
-                        $('#btnEditFamily').hide();
-                        $('#btnCreateFamily').show();
-                        addMemberBtn.hide();
+            /* =========================
+               PROFILE PICTURE
+            ========================= */
+            setProfilePicture(
+                userData.profile.profile_picture,
+                'profilePic',
+                'noProfilePicText'
+            );
 
-                        memberList.html(`<li class="list-group-item text-center text-muted">No family created yet.</li>`);
-                        $(".card-body table tbody").html(`
-                            <tr><th scope="row" colspan="2" class="text-center text-muted">No family data available</th></tr>
-                        `);
-                    }
+            /* =========================
+               SIGNATURE
+            ========================= */
+            setSignature(
+                userData.profile.signature,
+                'signaturePic',
+                'noSignatureText'
+            );
 
-                } else {
-                    console.log("User not authenticated.");
-                    $('#page-top').html('<p>User is not authenticated</p>');
+            /* =========================
+               FAMILY INFO (OPTIONAL / SAFE)
+            ========================= */
+            const family = userData.profile.family;
+
+            if (family && family.id) {
+
+                if ($('#family_id').length) {
+                    $('#family_id').val(family.id);
                 }
+
+                if ($('#btnEditFamily').length) {
+                    $('#btnEditFamily')
+                        .attr('href', `/family/${family.id}/edit/`)
+                        .show();
+                }
+
+                if ($('#btnCreateFamily').length) {
+                    $('#btnCreateFamily').hide();
+                }
+
+                if ($('#btnAddMember').length) {
+                    $('#btnAddMember')
+                        .attr('href', `/family/${family.id}/member/add/`)
+                        .show();
+                }
+
+                if ($('#containerMember').length) {
+                    const memberList = $('#containerMember');
+                    memberList.empty();
+
+                    if (Array.isArray(family.members) && family.members.length) {
+                        family.members.forEach(member => {
+                            const avatar =
+                                member.avatar_url ||
+                                `/static/img/users/avatars/${member.default_avatar || 'default.png'}`;
+
+                            memberList.append(`
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <img src="${avatar}" class="rounded-circle me-2" width="40" height="40">
+                                        <div>
+                                            <strong>${member.full_name}</strong><br>
+                                            <small class="text-muted">${member.role || '—'}</small>
+                                        </div>
+                                    </div>
+                                </li>
+                            `);
+                        });
+                    } else {
+                        memberList.html(
+                            `<li class="list-group-item text-center text-muted">
+                                No family members found.
+                             </li>`
+                        );
+                    }
+                }
+
             } else {
-                console.log('Invalid response format or empty data.');
-                $('#page-top').html('<p>Invalid response format or empty data</p>');
+                if ($('#containerMember').length) {
+                    $('#containerMember').html(
+                        `<li class="list-group-item text-center text-muted">
+                            No family created yet.
+                         </li>`
+                    );
+                }
+
+                if ($('#btnEditFamily').length) $('#btnEditFamily').hide();
+                if ($('#btnCreateFamily').length) $('#btnCreateFamily').show();
+                if ($('#btnAddMember').length) $('#btnAddMember').hide();
             }
         },
-        error: function(xhr, status, error) {
-            console.error('Error fetching user profile data:', error);
-
-            if (xhr.responseJSON && xhr.responseJSON.detail) {
-                error_message(xhr.responseJSON.detail);
-            } else {
-                error_message("An unknown error occurred.");
-            }
+        error: function (xhr) {
+            console.error('Profile load failed:', xhr);
+            error_message('Failed to load profile');
         }
     });
 }

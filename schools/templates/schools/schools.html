@@ -113,14 +113,22 @@
 <script src="{% static 'js/schools/delete-school.js' %}"></script>
 <script src="{% static 'js/schools/list-schools.js' %}"></script>
 <script>
-  $(document).ready(function() {
+  // Hook search + refresh
+  $(document).ready(function () {
+      // Initial load
+      loadSchools();
 
-    // When the modal closes
-    // $('#addParticipantModal').on('hidden.bs.modal', function () {
-    //     location.reload();
-    // });
+      // 🔍 Live search
+      $("#searchSchools").on("keyup", function () {
+          let search = $(this).val();
+          loadSchools(1, search);
+      });
 
-
+      // 🔄 Refresh button
+      $("#btnRefresh").on("click", function () {
+          $("#searchSchools").val("");
+          loadSchools(1);
+      });
   });
 </script>
 {% endblock %}

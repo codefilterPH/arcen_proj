@@ -1,0 +1,85 @@
+
+<!-- ================= ATTENDANCE TABLE ================= -->
+<div class="info-card mt-8">
+<h3 class="mb-3">Attendance Records</h3>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs mb-4" id="attendanceTabs">
+  <li class="nav-item">
+    <a class="nav-link active" data-bs-toggle="tab" href="#todayAttendance">
+      Today
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-bs-toggle="tab" href="#allAttendance">
+      All Attendance
+    </a>
+  </li>
+</ul>
+
+<!-- Tab Content -->
+<div class="tab-content">
+
+  <!-- TODAY -->
+  <div class="tab-pane fade show active" id="todayAttendance">
+    <div class="overflow-x-auto">
+      <table class="min-w-full border">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-3 py-2 text-left">Cadet</th>
+            <th class="px-3 py-2 text-left">Flight</th>
+            <th class="px-3 py-2 text-left">Time In</th>
+            <th class="px-3 py-2 text-left">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-t">
+            <td class="px-3 py-2">John Doe</td>
+            <td class="px-3 py-2">Alpha</td>
+            <td class="px-3 py-2">07:12 AM</td>
+            <td class="px-3 py-2 text-green-600 font-semibold">Present</td>
+          </tr>
+          <tr class="border-t">
+            <td class="px-3 py-2">Jane Smith</td>
+            <td class="px-3 py-2">Bravo</td>
+            <td class="px-3 py-2">—</td>
+            <td class="px-3 py-2 text-amber-600 font-semibold">Absent</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ALL -->
+  <div class="tab-pane fade" id="allAttendance">
+    <div class="overflow-x-auto">
+      <table class="min-w-full border">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-3 py-2 text-left">Date</th>
+            <th class="px-3 py-2 text-left">Cadet</th>
+            <th class="px-3 py-2 text-left">Flight</th>
+            <th class="px-3 py-2 text-left">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-t">
+            <td class="px-3 py-2">2025-12-18</td>
+            <td class="px-3 py-2">John Doe</td>
+            <td class="px-3 py-2">Alpha</td>
+            <td class="px-3 py-2 text-green-600 font-semibold">Present</td>
+          </tr>
+          <tr class="border-t">
+            <td class="px-3 py-2">2025-12-17</td>
+            <td class="px-3 py-2">Jane Smith</td>
+            <td class="px-3 py-2">Bravo</td>
+            <td class="px-3 py-2 text-amber-600 font-semibold">Absent</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</div>
+

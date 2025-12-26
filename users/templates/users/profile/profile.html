@@ -1,242 +1,288 @@
-{% extends 'layouts/base.html' %}
-
 {% load static %}
 
-{% block extra_css %}
-<!-- Font awesome -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<!-- ========================= -->
+<!-- PROFILE MODAL -->
+<!-- ========================= -->
+<div class="modal fade"
+     id="profileModal"
+     tabindex="-1"
+     aria-labelledby="profileModalLabel"
+     aria-hidden="true">
 
-<!-- DataTables CSS + JS -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css"/>
-<style>
-    .upload-btn {
-        z-index: 10;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .upload-btn:hover {
-        background-color: #0056b3;
-    }
-</style>
-{% endblock %}
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content shadow-lg rounded-3">
 
-{% block title %}<title>QRAR - Profile Management </title> {% endblock %}
+      <!-- ========================= -->
+      <!-- MODAL HEADER -->
+      <!-- ========================= -->
+      <div class="modal-header">
+        <h5 class="modal-title d-flex align-items-center gap-2" id="profileModalLabel">
+          <i class="fas fa-id-card"></i>
+          Profile Management
+        </h5>
+        <button type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
 
-{% block content %}
-<div id="layoutSidenav_content">
-    <main>
-        <div class="container mt-4 mb-4">
-            <h1 class="h3 mb-4 text-gray-800 ms-5 ps-1">Profile Page</h1>
-            <div class="row">
-                <!-- Column 1: Profile + Signature Preview -->
-                <div class="col-md-4 col-sm-12 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body text-center position-relative">
-                            <!-- Profile Picture -->
-                            <div class="position-relative d-inline-block">
-                                <img id="profilePic"
-                                     src=""
-                                     alt="Profile Picture"
-                                     class="img-thumbnail rounded-circle mb-3"
-                                     style="width: 150px; height: 150px; object-fit: cover; display: none;">
+      <!-- ========================= -->
+      <!-- MODAL BODY -->
+      <!-- ========================= -->
+      <div class="modal-body p-4">
 
-                                <p id="noProfilePicText" class="text-muted mb-3" style="display: none;">
-                                    No profile picture uploaded
-                                </p>
+        <div class="container-fluid">
+          <div class="row">
 
-                                <label for="profilePicUpload"
-                                       class="btn btn-primary upload-btn position-absolute"
-                                       style="bottom: 10px; right: 10px;">
-                                    <i class="fas fa-camera"></i>
-                                </label>
-                                <input type="file" id="profilePicUpload" class="d-none" accept="image/*">
-                            </div>
+            <!-- ================================= -->
+            <!-- COLUMN 1: PROFILE + SIGNATURE -->
+            <!-- ================================= -->
+            <div class="col-lg-4 col-md-12 mb-4">
+              <div class="card h-100">
+                <div class="card-body text-center position-relative">
 
+                  <!-- Profile Picture -->
+                  <div class="position-relative d-inline-block">
+                    <img id="profilePic"
+                         src=""
+                         alt="Profile Picture"
+                         class="img-thumbnail rounded-circle mb-3"
+                         style="width:150px;height:150px;object-fit:cover;display:none;">
 
-                            <!-- Signature Preview -->
-                            <div class="mt-3">
-                                <img id="signaturePic"
-                                     src=""
-                                     alt="Signature"
-                                     class="img-thumbnail"
-                                     width="180"
-                                     style="display: none;">
+                    <p id="noProfilePicText"
+                       class="text-muted mb-3"
+                       style="display:none;">
+                      No profile picture uploaded
+                    </p>
 
-                                <p id="noSignatureText" class="text-muted" style="display: none;">
-                                    No uploaded signature
-                                </p>
-                            </div>
+                    <label for="profilePicUpload"
+                           class="btn btn-primary upload-btn position-absolute"
+                           style="bottom:10px;right:10px;">
+                      <i class="fas fa-camera"></i>
+                    </label>
+                    <input type="file"
+                           id="profilePicUpload"
+                           class="d-none"
+                           accept="image/*">
+                  </div>
 
+                  <!-- Signature Preview -->
+                  <div class="mt-3 text-center">
+                    <img id="signaturePic"
+                         src=""
+                         alt="Signature"
+                         class="img-thumbnail d-block mx-auto"
+                         style="display:none;">
+                    <p id="noSignatureText"
+                       class="text-muted"
+                       style="display:none;">
+                      No uploaded signature
+                    </p>
+                  </div>
 
-                            <!-- User Info -->
-                            <h4 class="mt-3 mb-4" id="username"> </h4>
-                            <hr>
-                            <div id="bioContainer" class="text-muted mt-4" style="max-height: 120px; overflow-y: auto;">
-                                <p id="bio" class="mb-0"></p>
-                            </div>
-                        </div>
-                    </div>
+                  <!-- User Info -->
+                  <h4 class="mt-3 mb-3" id="username"></h4>
+                  <hr>
+
+                  <div id="bioContainer"
+                       class="text-muted mt-3"
+                       style="max-height:120px;overflow-y:auto;">
+                    <p id="bio" class="mb-0"></p>
+                  </div>
+
                 </div>
-
-                <!-- Column 2: Personal Info -->
-                <div class="col-md-4 col-sm-12 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <h5>Personal Information</h5>
-                                <a href="{% url 'users:update_profile_view' %}" class="edit-btn" title="Edit Personal Information">
-                                    <i class="fas fa-pencil-alt"></i>
-                                </a>
-                            </div>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item" id="name"><strong>Full Name:</strong> {{ user.get_full_name }}</li>
-                                <li class="list-group-item" id="rank"><strong>Rank:</strong> {{ user.userprofile.rank }}</li>
-                                <li class="list-group-item" id="sub_svc"><strong>Sub-Service:</strong> {{ user.userprofile.sub_svc }}</li>
-                                <li class="list-group-item" id="gender"><strong>Gender:</strong> {{ user.userprofile.gender }}</li>
-                                <li class="list-group-item" id="birth_date"><strong>Birth Date:</strong> {{ user.userprofile.birth_date|date:"F j, Y" }}</li>
-                                <li class="list-group-item" id="position"><strong>Position:</strong> {{ user.userprofile.position }}</li>
-                                <li class="list-group-item" id="classification"><strong>Classification:</strong> {{ user.userprofile.classification.name }}</li>
-                                <li class="list-group-item" id="designations"><strong>Designations:</strong>
-                                    {% for d in user.userprofile.designations.all %}
-                                        <span class="badge bg-secondary">{{ d.name }}</span>
-                                    {% empty %}
-                                        <span class="text-muted">None</span>
-                                    {% endfor %}
-                                </li>
-                                <li class="list-group-item" id="organizations"><strong>Organizations:</strong>
-                                    {% for org in user.userprofile.organizations.all %}
-                                        <span class="badge bg-info text-dark">{{ org.name }}</span>
-                                    {% empty %}
-                                        <span class="text-muted">None</span>
-                                    {% endfor %}
-                                </li>
-                                <li class="list-group-item" id="preferred_initial"><strong>Preferred Initial:</strong> {{ user.userprofile.preferred_initial }}</li>
-                                <li class="list-group-item" id="extension_name"><strong>Extension Name:</strong> {{ user.userprofile.extension_name }}</li>
-                                <li class="list-group-item" id="email"><strong>Email:</strong> {{ user.email }}</li>
-                                <li class="list-group-item" id="email_verified"><strong>Email Verified:</strong>
-                                    {% if user.userprofile.email_verified %}
-                                        <span class="text-success">Yes</span>
-                                    {% else %}
-                                        <span class="text-danger">No</span>
-                                    {% endif %}
-                                </li>
-                                <li class="list-group-item" id="contact_number"><strong>Contact Number:</strong> {{ user.userprofile.contact_number }}</li>
-                                <li class="list-group-item" id="last_activity"><strong>Last Activity:</strong> {{ user.userprofile.last_activity|date:"M d, Y H:i" }}</li>
-                                <li class="list-group-item" id="last_password_reset"><strong>Last Password Reset:</strong> {{ user.userprofile.last_password_reset|date:"M d, Y H:i" }}</li>
-                                <li class="list-group-item" id="created_at"><strong>Joined:</strong> {{ user.date_joined|date:"F j, Y" }}</li>
-                                <li class="list-group-item" id="display_name_format"><strong>Display Name Format:</strong> {{ user.userprofile.get_display_name_format_display }}</li>
-                            </ul>
-
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Column 3: Signature Interaction -->
-                <div class="col-md-4 col-sm-12 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <div>
-                                <h5 class="mb-3">E-Signature Panel</h5>
-                                <p class="text-muted">Sign or update your digital signature below.</p>
-                                 {% include 'users/profile/esign.html' %}
-                            </div>
-                            {% comment %}
-                            <hr>
-                            <div class="mt-3">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="mb-0">Family Information</h5>
-                                <div class="d-flex gap-1">
-                                    <a href="#" class="btn btn-sm btn-success">
-                                        <i class="fas fa-plus-circle mr-1"></i> Create
-                                    </a>&nbsp;
-                                    <a href="#" class="btn btn-sm btn-primary">
-                                        <i class="fas fa-edit me-1"></i> Edit
-                                    </a>
-                                </div>
-                            </div>
-
-                                <table class="table table-bordered table-hover mb-0">
-                                <tbody>
-                                    <tr>
-                                        <th scope="row" style="width: 30%;">Family Name</th>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Description</th>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Created By</th>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Created At</th>
-                                        <td></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </div>
-                            <hr>
-                            <div class="mt-3">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="mb-0">Family Members</h5>
-                                <a href="#" class="btn btn-sm btn-success" title="Add Member">
-                                    <i class="fas fa-user-plus"></i>
-                                </a>
-                            </div>
-
-                                <ul class="list-group list-group-flush">
-                                {% for member in members %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <img src="{{ member.avatar_url }}" class="rounded-circle me-3" alt="Avatar" width="40" height="40">
-                                        <span>{{ member.name }}</span>
-                                    </div>
-                                    <form method="post" action="{% url 'family_remove_member' member.id %}" class="ms-2">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove Member">
-                                            <i class="fas fa-user-minus"></i>
-                                        </button>
-                                    </form>
-                                </li>
-                                {% endfor %}
-
-                                {% if not members %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <img src="{% static 'img/users/avatars/cat.png' %}" class="rounded-circle me-3" alt="Avatar" width="40" height="40">
-                                        <span>Jane Smith</span>
-                                    </div>
-                                    <button class="btn btn-sm btn-outline-danger" disabled>
-                                        <i class="fas fa-user-minus"></i>
-                                    </button>
-                                </li>
-                                {% endif %}
-                            </ul>
-                            </div>
-                            {% endcomment %}
-                        </div>
-                    </div>
-                </div>
+              </div>
             </div>
-        </div>
-    </main>
-</div>
-{% endblock %}
 
-{% block extra_js %}
-<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+            <!-- ================================= -->
+            <!-- COLUMN 2: PERSONAL INFORMATION -->
+            <!-- ================================= -->
+            <div class="col-lg-4 col-md-12 mb-4" id="profileViewColumn">
+              <div class="card h-100">
+                <div class="card-body">
+
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="mb-0">Personal Information</h5>
+                    <button type="button"
+                            id="btnEditProfile"
+                            class="btn btn-sm btn-outline-primary"
+                            title="Edit Profile">
+                      <i class="fas fa-pencil-alt"></i>
+                    </button>
+
+                  </div>
+
+                  <ul class="list-group list-group-flush small">
+                    <li class="list-group-item" id="name"><strong>Full Name:</strong> {{ user.get_full_name }}</li>
+                    <li class="list-group-item" id="rank"><strong>Rank:</strong> {{ user.userprofile.rank }}</li>
+                    <li class="list-group-item" id="sub_svc"><strong>Sub-Service:</strong> {{ user.userprofile.sub_svc }}</li>
+                    <li class="list-group-item" id="gender"><strong>Gender:</strong> {{ user.userprofile.gender }}</li>
+                    <li class="list-group-item" id="birth_date"><strong>Birth Date:</strong> {{ user.userprofile.birth_date|date:"F j, Y" }}</li>
+                    <li class="list-group-item" id="position"><strong>Position:</strong> {{ user.userprofile.position }}</li>
+                    <li class="list-group-item" id="classification"><strong>Classification:</strong> {{ user.userprofile.classification.name }}</li>
+
+                    <li class="list-group-item" id="designations">
+                      <strong>Designations:</strong><br>
+                      {% for d in user.userprofile.designations.all %}
+                        <span class="badge bg-secondary">{{ d.name }}</span>
+                      {% empty %}
+                        <span class="text-muted">None</span>
+                      {% endfor %}
+                    </li>
+
+                    <li class="list-group-item" id="organizations">
+                      <strong>Organizations:</strong><br>
+                      {% for org in user.userprofile.organizations.all %}
+                        <span class="badge bg-info text-dark">{{ org.name }}</span>
+                      {% empty %}
+                        <span class="text-muted">None</span>
+                      {% endfor %}
+                    </li>
+
+                    <li class="list-group-item" id="email"><strong>Email:</strong> {{ user.email }}</li>
+                    <li class="list-group-item" id="contact_number"><strong>Contact Number:</strong> {{ user.userprofile.contact_number }}</li>
+                    <li class="list-group-item" id="created_at"><strong>Joined:</strong> {{ user.date_joined|date:"F j, Y" }}</li>
+                  </ul>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- ================================= -->
+            <!-- COLUMN 2B: EDIT MODE (HIDDEN INITIALLY) -->
+            <!-- ================================= -->
+            <div class="col-lg-4 col-md-12 mb-4 d-none" id="profileEditColumn">
+              <div class="card h-100">
+                <div class="card-body">
+
+                  <!-- EDIT HEADER -->
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0 fw-semibold">Edit Profile</h5>
+
+                    <div class="d-flex gap-2">
+                      <button type="button"
+                              form="updateProfileForm"
+                              class="btn btn-sm btn-primary" onclick="updateUserData();">
+                        <i class="fas fa-save me-1"></i> Save
+                      </button>
+
+                      <button type="button"
+                              id="btnCancelEdit"
+                              class="btn btn-sm btn-outline-secondary">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+
+
+                  <form id="updateProfileForm">
+
+                    <!-- USER -->
+                    <input id="first_name_edit" class="form-control mb-2" placeholder="First Name" required aria-required="true">
+                    <input id="last_name_edit" class="form-control mb-2" placeholder="Last Name" required aria-required="true">
+                    <input id="email_edit" type="email" class="form-control mb-2" placeholder="Email" required aria-required="true">
+
+                    <!-- PROFILE -->
+                    <input id="middle_name_edit" class="form-control mb-2" placeholder="Middle Name">
+                    <input id="preferred_initial_edit" class="form-control mb-2" placeholder="Preferred Initial">
+                    <input id="extension_name_edit" class="form-control mb-2" placeholder="Extension Name">
+
+                    <input id="rank_edit" class="form-control mb-2" placeholder="Rank">
+                    <input id="sub_svc_edit" class="form-control mb-2" placeholder="Sub-Service">
+                    <input id="position_edit" class="form-control mb-2" placeholder="Position">
+
+                    <select id="gender_edit" class="form-select mb-2"></select>
+                    <input id="birth_date_edit" type="date" class="form-control mb-2">
+                    <input id="contact_number_edit" class="form-control mb-2" placeholder="Contact Number" required aria-required="true">
+
+                    <select id="classification_edit" class="form-select mb-2"></select>
+                    <select id="designations_edit" class="form-select mb-2" multiple></select>
+                    <select id="organizations_edit" class="form-select mb-2" multiple></select>
+
+                    <select id="display_name_format_edit" class="form-select mb-2">
+                      <option value="title">Title Case</option>
+                      <option value="camel">Camel Case</option>
+                      <option value="upper">UPPERCASE</option>
+                      <option value="lower">lowercase</option>
+                    </select>
+
+                    <textarea id="bio_edit" class="form-control mb-3" rows="2" placeholder="Bio"></textarea>
+                  </form>
+
+                </div>
+              </div>
+            </div>
+            <!-- ================================= -->
+            <!-- COLUMN 3: E-SIGNATURE PANEL -->
+            <!-- ================================= -->
+            <div class="col-lg-4 col-md-12 mb-4">
+              <div class="card h-100">
+                <div class="card-body text-center">
+                  <h5 class="mb-3">E-Signature Panel</h5>
+                  <p class="text-muted">
+                    Sign or update your digital signature below.
+                  </p>
+
+                  {% include 'users/profile/esign.html' %}
+                </div>
+              </div>
+            </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+<script src="{% static 'js/users/profile/update-info.js' %}"></script>
 <script src="{% static 'js/users/profile/upload-profile.js' %}"></script>
 <script src="{% static 'js/users/profile/profile.js' %}"></script>
 <script>
-    $(document).ready(function () {
-        getUserData();
+  $(document).ready(function() {
+    $('#profileModal').on('shown.bs.modal', function () {
+      getProfile();
+
+      if (typeof resizeCanvas === 'function') {
+        resizeCanvas();
+      }
+
+      // Always reset to view mode
+      $('#profileEditColumn').addClass('d-none');
+      $('#profileViewColumn').removeClass('d-none');
     });
+
+    // Edit → Edit Mode
+    $(document).on('click', '#btnEditProfile', function () {
+      $('#profileViewColumn').addClass('d-none');
+      $('#profileEditColumn').removeClass('d-none');
+
+      // Populate edit fields
+      $('#first_name_edit').val(userData?.user?.first_name || '');
+      $('#last_name_edit').val(userData?.user?.last_name || '');
+      $('#email_edit').val(userData?.user?.email || '');
+
+      $('#middle_name_edit').val(userData?.profile?.middle_name || '');
+      $('#preferred_initial_edit').val(userData?.profile?.preferred_initial || '');
+      $('#extension_name_edit').val(userData?.profile?.extension_name || '');
+      $('#rank_edit').val(userData?.profile?.rank || '');
+      $('#sub_svc_edit').val(userData?.profile?.sub_svc || '');
+      $('#position_edit').val(userData?.profile?.position || '');
+      $('#birth_date_edit').val(userData?.profile?.birth_date || '');
+      $('#contact_number_edit').val(userData?.profile?.contact_number || '');
+      $('#bio_edit').val(userData?.profile?.bio || '');
+      $('#display_name_format_edit').val(userData?.profile?.display_name_format || '');
+    });
+
+    // Preview button
+    $(document).on('click', '#btnPreviewProfile', function () {
+      $('#profileEditColumn').addClass('d-none');
+      $('#profileViewColumn').removeClass('d-none');
+    });
+
+    // Cancel button
+    $(document).on('click', '#btnCancelEdit', function () {
+      $('#profileEditColumn').addClass('d-none');
+      $('#profileViewColumn').removeClass('d-none');
+    });
+  });
 </script>
-{% endblock %}

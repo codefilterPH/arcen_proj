@@ -1,4 +1,126 @@
 {% load static %}
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+
+<style>
+/* =========================
+   MODAL REFINEMENT
+========================= */
+#addParticipantModal .modal-content {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#addParticipantModal .modal-header {
+    border-bottom: none;
+}
+
+#addParticipantModal .modal-title {
+    font-size: 1.1rem;
+    letter-spacing: 0.3px;
+}
+
+#addParticipantModal .modal-footer {
+    border-top: 1px solid #e5e7eb;
+}
+
+/* =========================
+   SELECT2 — BOOTSTRAP 5 LOOK
+========================= */
+.select2-container {
+    width: 100% !important;
+}
+
+.select2-container--bootstrap-5
+.select2-selection--single {
+    height: 38px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    display: flex;
+    align-items: center;
+}
+
+.select2-container--bootstrap-5
+.select2-selection__rendered {
+    line-height: 26px;
+    font-size: 0.95rem;
+}
+
+.select2-container--bootstrap-5
+.select2-selection__arrow {
+    height: 36px;
+}
+
+.select2-dropdown {
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.select2-results__option {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+}
+
+.select2-results__option--highlighted {
+    background-color: #2563eb !important;
+    color: #fff;
+}
+
+/* =========================
+   ADD BUTTON
+========================= */
+#btnAddToTable {
+    height: 38px;
+    min-width: 42px;
+    border-radius: 6px;
+}
+
+#btnAddToTable i {
+    font-size: 0.9rem;
+}
+
+/* =========================
+   MESSAGE TEXT
+========================= */
+#participantMessage {
+    min-height: 18px;
+}
+
+/* =========================
+   SELECTED PARTICIPANTS TABLE
+========================= */
+#participantsTable {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#participantsTable thead th {
+    background-color: #f8fafc;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+#participantsTable tbody td {
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+
+#participantsTable tbody tr:hover {
+    background-color: #f1f5f9;
+}
+
+/* =========================
+   SPINNER POSITION
+========================= */
+#spinnerParticipant {
+    pointer-events: none;
+}
+</style>
+{% endblock %}
 
 <!-- Add Participant Modal -->
 <div class="modal fade" id="addParticipantModal" tabindex="-1" aria-labelledby="addParticipantModalLabel" aria-hidden="true">
@@ -6,9 +128,9 @@
     <div class="modal-content rounded-lg shadow-lg">
 
       <!-- Header -->
-      <div class="modal-header bg-blue-600 text-white rounded-t-lg px-4 py-2 d-flex align-items-center justify-content-between">
+      <div class="modal-header rounded-t-lg px-4 py-2 d-flex align-items-center justify-content-between">
         <h5 class="modal-title text-lg fw-semibold d-flex align-items-center gap-2" id="addParticipantModalLabel">
-          <i class="fas fa-user-plus text-white text-m"></i>
+          <i class="fas fa-user-plus text-m"></i>
           Add Student
         </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -78,14 +200,36 @@
 </div>
 
 {% block extra_js %}
-<!-- Core JS dependencies -->
+
+<!-- Select2 MUST come AFTER jQuery -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script src="{% static 'js/student/add-students.js' %}"></script>
 <script src="{% static 'js/student/actions.js' %}"></script>
-<script src="{% static 'js/student/load-users.js' %}"></script>
+<script src="{% static 'js/student/load-available-students.js' %}"></script>
 <script>
-  $(document).ready(function() {
-    loadUsers();
-  });
+$(document).ready(function () {
+
+    $('#addParticipantModal').on('show.bs.modal', function () {
+        const schoolId = window.currentSchoolId;
+
+        if (!schoolId) {
+            $('#participantMessage')
+                .addClass('text-danger')
+                .text('❌ Missing school context.');
+            return;
+        }
+
+        // Reset UI
+        $('#participantSelect').val(null).trigger('change');
+        $('#participantsTable tbody').empty();
+        $('#participantMessage').text('');
+
+        // 🔥 Initialize Select2 (AJAX search)
+        initAvailableStudentsSelect();
+    });
+
+});
 </script>
+
 {% endblock %}

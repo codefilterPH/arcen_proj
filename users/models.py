@@ -259,3 +259,4 @@ class UserProfile(models.Model):
 
         # Fallback
         return base_display
+

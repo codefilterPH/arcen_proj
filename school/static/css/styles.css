@@ -19607,8 +19607,9 @@ body {
   border-color: rgba(0, 0, 0, 0);
 }
 .nav-fixed #layoutSidenav #layoutSidenav_content {
-  padding-left: 15rem;
-  top: 3.625rem;
+  padding-left: 13rem;
+  margin-left: 1rem;
+  top: 1.725rem;
 }
 
 .layout-rtl #layoutSidenav #layoutSidenav_nav {

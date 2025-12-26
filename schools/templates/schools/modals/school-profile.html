@@ -1,69 +1,131 @@
 {% load static %}
 
-<!-- School Profile Modal -->
-<div class="modal fade" id="schoolProfileModal" tabindex="-1" aria-labelledby="schoolProfileModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg">
+<style>
+  .banner-header {
+    background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    color: #fff;
+    border-radius: 0.5rem 0.5rem 0 0;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    box-shadow: inset 0 -2px 0 rgba(255, 255, 255, 0.2);
+  }
+  .banner-header i {
+    color: #bfdbfe;
+  }
+</style>
 
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="schoolProfileModalLabel">
-          <i class="fas fa-school me-2"></i> School Profile
+<div class="modal fade" id="schoolProfileModal" tabindex="-1"
+     aria-labelledby="schoolProfileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+
+      <!-- Modal Header -->
+      <div class="modal-header bg-white border-0">
+        <h5 class="modal-title d-flex align-items-center" id="schoolProfileModalLabel">
+          <i class="fas fa-school text-primary me-2"></i>
+          <span class="school-name">Loading…</span>
         </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 
-      <div class="modal-body bg-light">
-        <div class="card shadow-sm border-0 mb-4">
+      <!-- Modal Body -->
+      <div class="modal-body pt-0">
+
+        <div class="card shadow-sm border-0 mb-3">
+          <div class="banner-header">
+            <i class="fas fa-school me-2"></i> School Profile
+          </div>
+
           <div class="card-body">
             <div class="row g-4 align-items-start">
 
-              <!-- Column 1: Seal/Logo -->
+              <!-- Logo -->
               <div class="col-md-3 text-center">
-                <img id="profileSchoolLogo" src="{% static 'img/no_logo.png' %}"
+                <img id="schoolLogoPreview"
+                     src="{% static 'img/no_logo.png' %}"
                      alt="School Logo"
                      class="img-fluid rounded shadow-sm mb-2"
                      style="max-height:150px;">
                 <div class="fw-semibold text-muted">Official Seal</div>
               </div>
 
-              <!-- Column 2: Info -->
+              <!-- Information -->
               <div class="col-md-5">
-                <h4 class="fw-bold mb-1" id="profileSchoolTitle">School Name Here</h4>
-                <p class="text-muted mb-2" id="profileSchoolAddress">
-                  <i class="fas fa-map-marker-alt me-2 text-danger"></i> Address not set
+                <h4 class="fw-bold mb-1 school-name">—</h4>
+
+                <p class="text-muted mb-2">
+                  <i class="fas fa-map-marker-alt me-2 text-danger"></i>
+                  <span class="school-address">—</span>
                 </p>
+
                 <p class="mb-0 small">
-                  <i class="fas fa-calendar-alt me-2 text-primary"></i>
-                  Created: <span id="profileSchoolCreated">--</span>
+                  <i class="fas fa-tag me-2 text-primary"></i>
+                  Slug: <span class="fw-semibold school-slug">—</span>
                 </p>
+
+                <p class="mb-0 small mt-2">
+                  <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                  Created: <span class="school-created">—</span>
+                </p>
+
                 <p class="mb-0 small">
                   <i class="fas fa-clock me-2 text-success"></i>
-                  Updated: <span id="profileSchoolUpdated">--</span>
+                  Updated: <span class="school-updated">—</span>
                 </p>
               </div>
 
-              <!-- Column 3: Organic Personnel -->
+              <!-- Personnel -->
               <div class="col-md-4">
                 <h6 class="fw-bold mb-2">
-                  <i class="fas fa-users me-2 text-primary"></i> Organic Personnel
+                  <i class="fas fa-users me-2 text-primary"></i>
+                  Organic Personnel
                 </h6>
-                <ul class="list-group list-group-flush" id="profilePersonnel">
-                  <li class="list-group-item px-0 d-flex align-items-center">
-                    <i class="fas fa-user-circle me-2 text-secondary"></i> No personnel assigned
+
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item px-0 text-muted">
+                    No personnel assigned
                   </li>
                 </ul>
               </div>
+
             </div>
           </div>
         </div>
 
-        <!-- Back button -->
-        <div class="text-end">
-          <button id="btnBackToSchoolsProfile" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-            <i class="fas fa-arrow-left"></i> Back to Schools
-          </button>
-        </div>
       </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-outline-secondary"
+                data-bs-dismiss="modal">
+          <i class="fas fa-times me-2"></i> Close
+        </button>
+      </div>
+
     </div>
   </div>
 </div>
+
+<!-- ✅ Load jQuery logic -->
+<script src="{% static 'js/schools/get-school-profile.js' %}"></script>
+<script>
+  $(document).ready(function () {
+
+  $('#schoolProfileModal').on('shown.bs.modal', function (event) {
+    const $button = $(event.relatedTarget);
+
+    if (!$button.length) {
+      console.warn('No trigger button found.');
+      return;
+    }
+
+    const slug = $button.data('slug');
+    console.log('Opening school profile:', slug);
+
+    getSchoolProfile(slug);
+  });
+
+});
+</script>

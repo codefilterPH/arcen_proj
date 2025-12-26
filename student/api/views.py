@@ -7,12 +7,14 @@ from student.models import Student
 from student.api.serializers import StudentSerializer
 from schools.models import SchoolOrg
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.exceptions import NotFound
+from django.shortcuts import get_object_or_404
 from django.db import transaction, models
 import uuid
 
 
 class StudentPagination(PageNumberPagination):
-    page_size = 10
+    page_size = 5
     page_size_query_param = 'page_size'
     max_page_size = 50
 
@@ -24,24 +26,33 @@ class StudentViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['user__first_name', 'user__last_name', 'user__username', 'student_id']
 
-    # ------------------------------------------------------------
-    # 🔹 Paginated Students by School + Filters + Search
-    # ------------------------------------------------------------
-    @action(detail=True, methods=['get'], url_path='students')
-    def students_by_school(self, request, pk=None):
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path=r"schools/(?P<school_id>[^/.]+)/students",
+    )
+    def students_by_school(self, request, school_id=None):
         """
-        GET /api/schools/{id}/students/
-        Supports pagination, search, and filters.
+        GET /api/students/schools/{id}/students/
         """
-        try:
-            school = SchoolOrg.objects.get(pk=pk)
-        except SchoolOrg.DoesNotExist:
-            return Response({"detail": "School not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        queryset = Student.objects.filter(school=school).select_related('user').order_by('user__last_name')
+        if not school_id:
+            raise NotFound("School ID is required.")
+
+        try:
+            school = SchoolOrg.objects.get(pk=school_id)
+        except SchoolOrg.DoesNotExist:
+            raise NotFound("School not found.")
+
+        queryset = (
+            Student.objects
+            .filter(school=school)
+            .select_related("user")
+            .order_by("user__last_name")
+        )
 
         # 🔍 Search
-        search = request.query_params.get('search')
+        search = request.query_params.get("search")
         if search:
             queryset = queryset.filter(
                 models.Q(user__first_name__icontains=search)
@@ -49,26 +60,11 @@ class StudentViewSet(viewsets.ModelViewSet):
                 | models.Q(student_id__icontains=search)
             )
 
-        # 🎓 Filters
-        school_year = request.query_params.get('school_year')
-        semester = request.query_params.get('semester')
-        flight = request.query_params.get('flight')
-
-        if school_year:
-            queryset = queryset.filter(classification__name__icontains=school_year)
-        if semester:
-            queryset = queryset.filter(preferred_initial__icontains=semester)
-        if flight:
-            queryset = queryset.filter(extension_name__icontains=flight)
-
-        # ✅ Proper Pagination (fully functional)
-        paginator = self.paginator  # uses pagination_class
-        page = paginator.paginate_queryset(queryset, request)
+        page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
-            return paginator.get_paginated_response(serializer.data)
+            return self.get_paginated_response(serializer.data)
 
-        # fallback if pagination disabled
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -164,6 +160,144 @@ class StudentViewSet(viewsets.ModelViewSet):
                 "deleted_count": deleted_count,
                 "deleted_students": deleted_usernames,
                 "message": f"Successfully removed {deleted_count} student(s) from {school.name}."
+            },
+            status=status.HTTP_200_OK
+        )
+
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path=r"schools/(?P<school_id>[^/.]+)/available",
+    )
+    def available_students(self, request, school_id=None):
+        """
+        GET /api/students/schools/{id}/available/
+        Returns users NOT yet enrolled in this school.
+        Uses UserProfile.__str__() for display name.
+        """
+
+        if not school_id:
+            raise NotFound("School ID is required.")
+
+        try:
+            school = SchoolOrg.objects.get(pk=school_id)
+        except SchoolOrg.DoesNotExist:
+            raise NotFound("School not found.")
+
+        # 🔹 IDs of users already enrolled in this school
+        enrolled_user_ids = Student.objects.filter(
+            school=school
+        ).values_list("user_id", flat=True)
+
+        # 🔹 Users NOT yet students of this school
+        queryset = (
+            User.objects
+            .exclude(id__in=enrolled_user_ids)
+            .select_related("userprofile")
+            .order_by("last_name", "first_name")
+        )
+
+        # 🔍 Optional search
+        search = request.query_params.get("search")
+        if search:
+            queryset = queryset.filter(
+                models.Q(first_name__icontains=search)
+                | models.Q(last_name__icontains=search)
+                | models.Q(username__icontains=search)
+            )
+
+        # 🔢 Pagination
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            data = [
+                {
+                    "id": u.id,
+                    "full_name": (
+                        str(u.userprofile)
+                        if hasattr(u, "userprofile")
+                        else (f"{u.first_name} {u.last_name}".strip() or u.username)
+                    ),
+                    "username": u.username,
+                    "email": u.email,
+                }
+                for u in page
+            ]
+            return self.get_paginated_response(data)
+
+        data = [
+            {
+                "id": u.id,
+                "full_name": (
+                    str(u.userprofile)
+                    if hasattr(u, "userprofile")
+                    else (f"{u.first_name} {u.last_name}".strip() or u.username)
+                ),
+                "username": u.username,
+                "email": u.email,
+            }
+            for u in queryset
+        ]
+
+        return Response(data)
+
+        # ------------------------------------------------------------
+        # 🔹 Get Student Profile by ID
+        # ------------------------------------------------------------
+
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path=r"get-student-profile/(?P<student_id>[^/.]+)",
+    )
+    def get_student_profile(self, request, student_id=None):
+        """
+        GET /api/students/get-student-profile/{student_id}/
+        """
+
+        student = get_object_or_404(
+            Student.objects.select_related("user", "school")
+            .prefetch_related("designations"),
+            pk=student_id
+        )
+
+        serializer = self.get_serializer(student)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+    @action(
+        detail=False,
+        methods=["patch"],
+        url_path=r"update-student-profile/(?P<student_id>[^/.]+)",
+    )
+    def update_student_profile(self, request, student_id=None):
+        """
+        PATCH /api/students/update-student-profile/{student_id}/
+        Partially update student snapshot & status fields.
+        """
+
+        student = get_object_or_404(
+            Student.objects.prefetch_related("designations"),
+            pk=student_id
+        )
+
+        serializer = self.get_serializer(
+            student,
+            data=request.data,
+            partial=True,  # 🔥 allows partial updates
+        )
+
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer.save()
+
+        return Response(
+            {
+                "message": "Student profile updated successfully.",
+                "student": serializer.data
             },
             status=status.HTTP_200_OK
         )

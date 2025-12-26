@@ -1,5 +1,6 @@
 {% load static %}
 {% block extra_css %}
+
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 <style>
   /* === Discord-style clean theme === */
@@ -63,7 +64,7 @@
   }
 </style>
 {% endblock %}
-
+{% block content %}
 <!-- 🔹 Students Modal -->
 <div class="modal fade" id="studentsModal" tabindex="-1" aria-labelledby="studentsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-fullscreen-sm-down">
@@ -77,6 +78,7 @@
       </div>
 
       <div class="modal-body">
+
         <!-- 🔹 Filters -->
         <div class="row align-items-end mb-3 gy-2">
           <div class="col-12 col-md-2">
@@ -118,11 +120,12 @@
           <div class="col-12 col-md-3 text-md-end text-center">
             <div class="d-flex justify-content-end gap-2 mt-3 mt-md-0">
               <button type="button" class="btn btn-refresh" id="btnRefreshStudents">
-                <i class="fas fa-sync-alt me-1"></i> Refresh
+                <i class="fas fa-sync-alt"></i>
               </button>
               <button type="button" class="btn btn-success" id="btnAddStudent"
-                      data-bs-toggle="modal" data-bs-target="#addParticipantModal">
-                <i class="fas fa-user-plus me-1"></i> Add Student
+                      data-bs-toggle="modal" data-bs-target="#addParticipantModal"
+                      data-school-id="" data-school-name="">
+                <i class="fas fa-user-plus"></i>
               </button>
             </div>
           </div>
@@ -132,20 +135,18 @@
         <div class="table-responsive">
           <table class="table table-striped table-hover align-middle bg-white shadow-sm rounded" id="studentsTable">
             <thead class="table-light">
-              <tr>
-                <th class="text-center" title="Profile Photo">Image</th>
-                <th class="text-center" title="QR Code">QR</th>
-                <th title="Student Full Name">Full Name</th>
-                <th title="Gender">Gender</th>
-                <th title="Birth Date">Birth Date</th>
-                <th title="Contact Number">Contact</th>
-                <th title="Status">Status</th>
-                <th class="text-center" title="Available Actions">Actions</th>
+               <tr>
+                <th class="text-center">Profile</th>
+                <th class="text-center">QR</th>
+                <th>Full Name</th>
+                <th class="text-center">Enrollment Status</th>
+                <th class="text-center">Active</th>
+                <th class="text-center">Gender</th>
+                <th>Contact</th>
+                <th class="text-center">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              <tr><td colspan="8" class="text-center text-muted py-3">No students found.</td></tr>
-            </tbody>
+            <tbody></tbody>
           </table>
         </div>
 
@@ -163,8 +164,11 @@
     </div>
   </div>
 </div>
-
+</div>
+{% include 'student/modals/edit-student.html' %}
+{% endblock %}
 {% block extra_js %}
+
 <script src="{% static 'js/student/remove-student.js' %}"></script>
 <script src="{% static 'js/student/load-students.js' %}"></script>
 <script>

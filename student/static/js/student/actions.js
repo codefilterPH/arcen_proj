@@ -84,6 +84,7 @@ $(document).on("click", "#btnAddToTable", function () {
       <td class="text-center">${rowCount}</td>
       <td>${userName}</td>
       <td class="text-center">
+
         <button class="btn btn-sm btn-danger btnRemoveParticipant">
           <i class="fas fa-trash"></i>
         </button>
@@ -208,3 +209,45 @@ $(document).on("click", ".btnRemoveStudent", function () {
     });
 });
 
+// =====================================================
+// 📥 Download Student QR Code (Hosted Image)
+// =====================================================
+$(document).on("click", ".btnDownloadQR", function () {
+  const qrUrl = $(this).data("qr-url");
+  const studentName = $(this).data("student-name") || "student";
+
+  if (!qrUrl) {
+    showToastSwal("⚠️ QR code not available.", "error");
+    return;
+  }
+
+  console.log("[QR DOWNLOAD] URL:", qrUrl);
+
+  const filename = `qr_${studentName.replace(/\s+/g, "_").toLowerCase()}.png`;
+
+  // Force browser download
+  const a = document.createElement("a");
+  a.href = qrUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+});
+
+
+//$(document).on('click', '.btnEditStudent', function () {
+//    const studentId = $(this).data('student-id');
+//
+//    // Optional: store student ID on modal for later use
+//    $('#editStudentModal').data('student-id', studentId);
+//
+//    // Open modal using Bootstrap 5 JS API
+//    const modalEl = document.getElementById('editStudentModal');
+//    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+//    modal.show();
+//
+//    console.log('Editing student ID:', studentId);
+//
+//    // Later you can call:
+//    // loadStudentForEdit(studentId);
+//});

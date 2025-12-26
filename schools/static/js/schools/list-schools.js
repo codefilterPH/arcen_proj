@@ -30,11 +30,15 @@ function loadSchools(page = 1, search = "") {
                     <p class="text-muted text-center">${school.address || "No address provided."}</p>
                     <div class="row g-2 mt-3">
                       <div class="col-6 col-sm-3">
-                        <a href="/schools/${school.slug}/profile/"
+                        <button
                            class="btn btn-sm btn-info w-100 btn-profile"
+                           //<a href="/schools/${school.slug}/profile/"
+                           data-slug="${school.slug}"
+                           data-bs-toggle="modal"
+                           data-bs-target="#schoolProfileModal"
                            title="Profile">
                           <i class="fas fa-id-badge"></i>
-                        </a>
+                        </button>
                       </div>
 
                       <!-- 🧑‍🎓 Students Button -->
@@ -139,20 +143,4 @@ function renderPagination(total, currentPage, search) {
     });
 }
 
-// Hook search + refresh
-$(document).ready(function () {
-    // Initial load
-    loadSchools();
 
-    // 🔍 Live search
-    $("#searchSchools").on("keyup", function () {
-        let search = $(this).val();
-        loadSchools(1, search);
-    });
-
-    // 🔄 Refresh button
-    $("#btnRefresh").on("click", function () {
-        $("#searchSchools").val("");
-        loadSchools(1);
-    });
-});

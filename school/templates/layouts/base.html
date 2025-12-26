@@ -10,7 +10,7 @@
     <meta name="author" content="" />
 
     {% block csrfToken %} <meta name="csrf-token" content="{{ csrf_token }}"> {% endblock %}
-    {% block title %}<title>ARCEN </title> {% endblock %}
+    {% block title %}<title>QR-Based Attendance & Records </title> {% endblock %}
 
     <link href="{% static 'css/litepicker.css' %}" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/material-icons@1.13.12/iconfont/material-icons.min.css">
@@ -23,7 +23,7 @@
     <script src="{% static 'js/feather.min.js' %}"></script>
 
     <!-- Include jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <!-- SweetAlert2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 
@@ -51,6 +51,8 @@
 <body class="nav-fixed pace-primary">
     <!-- NAVIGATION HERE -->
     {% block navbar %} {% include "includes/navigation.html" %} {% endblock %}
+    {% block modals %} {% include 'users/profile/profile.html' %} {% endblock %}
+
     <div id="layoutSidenav">
         <!-- SIDENAV HERE -->
         {% block sidebar %} {% include "includes/sidenav.html" %} {% endblock %}
@@ -111,8 +113,6 @@
 
     <script src="{% static 'js/bundle.js' %}"></script>
     <script src="{% static 'js/litepicker.js' %}"></script>
-    <!-- Page level plugins -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <!-- Include DataTables JavaScript -->
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>

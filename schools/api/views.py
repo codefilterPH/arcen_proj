@@ -8,6 +8,7 @@ from schools.api.serializers import SchoolOrgSerializer, SchoolYearSerializer
 from django.db import models
 from student.models import Student
 from student.api.serializers import StudentSerializer
+from django.shortcuts import get_object_or_404
 
 class SchoolYearPagination(PageNumberPagination):
     page_size = 10
@@ -128,6 +129,23 @@ class SchoolOrgViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ["name", "address"]  # 👈 fields to search
 
+
+    # ------------------------------------------------------------
+    # 🔹 CUSTOM ACTION: Retrieve school by slug
+    # ------------------------------------------------------------
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path=r"by-slug/(?P<slug>[-\w]+)"
+    )
+    def by_slug(self, request, slug=None):
+        """
+        GET /api/schools/by-slug/{slug}/
+        """
+        school = get_object_or_404(SchoolOrg, slug=slug)
+        serializer = self.get_serializer(school)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def create(self, request, *args, **kwargs):
         """
         Handle school creation with optional logo upload.
@@ -189,49 +207,49 @@ class SchoolOrgViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # ------------------------------------------------------------
-    # 🔹 CUSTOM ACTION: Get students for this school
-    # ------------------------------------------------------------
-    @action(detail=True, methods=['get'], url_path='students')
-    def students(self, request, pk=None):
-        """
-            GET /api/schools/{id}/students/
-            Returns paginated list of students for this school.
-            Supports filters: search, school_year, semester, flight.
-        """
-        try:
-            school = self.get_object()
-        except SchoolOrg.DoesNotExist:
-            return Response({"detail": "School not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        # Base query
-        queryset = Student.objects.filter(school=school).select_related('user').order_by('user__last_name')
-
-        # 🔍 Search
-        search = request.query_params.get('search')
-        if search:
-            queryset = queryset.filter(
-                models.Q(user__first_name__icontains=search) |
-                models.Q(user__last_name__icontains=search) |
-                models.Q(student_id__icontains=search)
-            )
-
-        # 🎓 Filters
-        school_year = request.query_params.get('school_year')
-        semester = request.query_params.get('semester')
-        flight = request.query_params.get('flight')
-
-        if school_year:
-            queryset = queryset.filter(classification__name__icontains=school_year)
-        if semester:
-            queryset = queryset.filter(preferred_initial__icontains=semester)
-        if flight:
-            queryset = queryset.filter(extension_name__icontains=flight)
-
-        # 🔢 Pagination
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = StudentSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = StudentSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    # # 🔹 CUSTOM ACTION: Get students for this school
+    # # ------------------------------------------------------------
+    # @action(detail=True, methods=['get'], url_path='students')
+    # def students(self, request, pk=None):
+    #     """
+    #         GET /api/schools/{id}/students/
+    #         Returns paginated list of students for this school.
+    #         Supports filters: search, school_year, semester, flight.
+    #     """
+    #     try:
+    #         school = self.get_object()
+    #     except SchoolOrg.DoesNotExist:
+    #         return Response({"detail": "School not found."}, status=status.HTTP_404_NOT_FOUND)
+    #
+    #     # Base query
+    #     queryset = Student.objects.filter(school=school).select_related('user').order_by('user__last_name')
+    #
+    #     # 🔍 Search
+    #     search = request.query_params.get('search')
+    #     if search:
+    #         queryset = queryset.filter(
+    #             models.Q(user__first_name__icontains=search) |
+    #             models.Q(user__last_name__icontains=search) |
+    #             models.Q(student_id__icontains=search)
+    #         )
+    #
+    #     # 🎓 Filters
+    #     school_year = request.query_params.get('school_year')
+    #     semester = request.query_params.get('semester')
+    #     flight = request.query_params.get('flight')
+    #
+    #     if school_year:
+    #         queryset = queryset.filter(classification__name__icontains=school_year)
+    #     if semester:
+    #         queryset = queryset.filter(preferred_initial__icontains=semester)
+    #     if flight:
+    #         queryset = queryset.filter(extension_name__icontains=flight)
+    #
+    #     # 🔢 Pagination
+    #     page = self.paginate_queryset(queryset)
+    #     if page is not None:
+    #         serializer = StudentSerializer(page, many=True)
+    #         return self.get_paginated_response(serializer.data)
+    #
+    #     serializer = StudentSerializer(queryset, many=True)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)

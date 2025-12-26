@@ -10,9 +10,9 @@
             <div class="container-fluid pt-3">
 
                 <!-- Page Banner -->
-                <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px; overflow: hidden;">
+                <div class="card shadow-sm border-0 mb-4" style="border-radius: 4px; overflow: hidden;">
                   <div class="card-body d-flex justify-content-between align-items-center flex-wrap"
-                       style="border-left: 5px solid #0d6efd; background-color: #fff; border-radius: 12px;">
+                       style="border-left: 4px solid #0d6efd; background-color: #fff; border-radius: 12px;">
 
                     <!-- Title -->
                     <h2 class="mb-0 d-flex align-items-center text-dark">
@@ -23,7 +23,7 @@
                 </div>
 
                 <!-- Table for Users -->
-                <div class="table-responsive mt-2">
+                <div class="mt-2">
                     <div class="row justify-content-end mb-3">
                         <div class="col-auto">
                             <!-- Add New User Button -->
@@ -82,7 +82,7 @@
 <script src="{% static 'js/users/load-users.js' %}"></script>
 <script>
     $(document).ready(function () {
-        initializeUsersData(); // ✅ This triggers your JS to load users
+        initializeUsersData();
     });
 </script>
 {% endblock %}
