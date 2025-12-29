@@ -104,7 +104,6 @@ class Command(BaseCommand):
         filepath = config.get('filepath')
         sheetname = config.get('sheetname', 'Sheet1')
         col_map = config.get('mapping', {})
-        default_password = config.get("default_password", "D3f@ult123!")
 
         if not filepath:
             raise CommandError("⚠️ 'filepath' is missing in settings JSON.")
@@ -125,61 +124,58 @@ class Command(BaseCommand):
 
         # 3️⃣ Iterate rows
         for idx, row in df.iterrows():
-            email = str(
-                row.iloc[column_index_from_string(col_map['email']) - 1]
-            ).strip().lower()
+            username = str(row.iloc[column_index_from_string(col_map.get('username', 'A')) - 1]).strip() or ''
+            if not username:
+                continue  # Skip blank rows
 
-            if not email:
-                self.stdout.write(self.style.WARNING(
-                    f"⚠️ Row {idx + 1}: Skipped (missing email)"
-                ))
-                continue
-
-            username = email
-
-            first_name = str(
-                row.iloc[column_index_from_string(col_map['first_name']) - 1]
-            ).strip()
-
-            last_name = str(
-                row.iloc[column_index_from_string(col_map['last_name']) - 1]
-            ).strip()
+            email = str(row.iloc[column_index_from_string(col_map.get('email', 'B')) - 1]).strip() or ''
+            first_name = str(row.iloc[column_index_from_string(col_map.get('first_name', 'C')) - 1]).strip() or ''
+            last_name = str(row.iloc[column_index_from_string(col_map.get('last_name', 'D')) - 1]).strip() or ''
 
             user, created_user = User.objects.update_or_create(
                 username=username,
-                defaults={
-                    "email": email,
-                    "first_name": first_name,
-                    "last_name": last_name,
-                },
+                defaults=dict(email=email, first_name=first_name, last_name=last_name),
             )
-
-            if created_user:
-                user.set_password(default_password)
-                user.save(update_fields=["password"])
 
             profile, created_profile = UserProfile.objects.get_or_create(user=user)
 
             for field, col_letter in col_map.items():
-                if field in ["email", "first_name", "last_name"]:
+                if field in ['username', 'email', 'first_name', 'last_name']:
                     continue
-
                 try:
                     value = row.iloc[column_index_from_string(col_letter) - 1]
                     if pd.notna(value) and hasattr(profile, field):
                         parsed_val = parse_excel_date(value)
 
+                        # Skip invalid or ancient dates (<1900)
                         if isinstance(parsed_val, (datetime, pd.Timestamp)) and parsed_val.year < 1900:
+                            self.stdout.write(self.style.WARNING(
+                                f"⚠️ Row {idx + 1}: Skipped invalid ancient date '{value}' for field '{field}'"
+                            ))
                             continue
 
-                        if field == "contact_number":
-                            parsed_val = clean_contact_number(parsed_val)
+                        # Format parsed dates properly
+                        if isinstance(parsed_val, pd.Timestamp):
+                            if field == "birth_date":
+                                parsed_val = parsed_val.strftime('%Y-%m-%d')
+                            else:
+                                parsed_val = parsed_val.strftime('%Y-%m-%d %H:%M:%S')
 
-                        setattr(profile, field, parsed_val)
+                        val_str = str(parsed_val).strip()
+
+                        # 🧩 Skip invalid or None values
+                        if field == "birth_date" and (not val_str or val_str.lower() in ["nan", "none"]):
+                            continue
+
+                        # 🧹 Clean and normalize contact numbers
+                        if field == "contact_number":
+                            val_str = clean_contact_number(val_str)
+
+                        setattr(profile, field, val_str)
 
                 except Exception as e:
                     self.stdout.write(self.style.WARNING(
-                        f"⚠️ Row {idx + 1}: Field '{field}' skipped ({e})"
+                        f"⚠️ Row {idx + 1}: Skipped field '{field}' due to error: {e}"
                     ))
 
             profile.save()

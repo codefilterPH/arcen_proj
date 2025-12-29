@@ -67,9 +67,9 @@ class UserProfile(models.Model):
     default_avatar = models.CharField(max_length=255, blank=True, null=True)
     signature = models.TextField(blank=True, null=True)
     position = models.CharField(max_length=255, blank=True, null=True)
-    designations = models.ManyToManyField("Designation", blank=True)
+    designations = models.ManyToManyField("users.Designation", blank=True)
     classification = models.ForeignKey(
-        Classification,
+        "users.Classification",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
