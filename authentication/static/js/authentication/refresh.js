@@ -3,31 +3,31 @@ function fetchWithRefresh(url, options = {}) {
         url: url,
         xhrFields: { withCredentials: true },
         ...options
-    }).fail(function(xhr) {
-        // Handle expired session or forbidden
-        if (xhr.status === 401 || xhr.status === 403) {
-            console.warn(`Access ${xhr.status} → refreshing or redirecting...`);
+    }).fail(function (xhr) {
+        if (xhr.status === 401) {
+            console.warn("401 → attempting refresh");
 
-            // Attempt token refresh only if it's a 401 (Unauthorized)
-            if (xhr.status === 401) {
-                return $.post({
-                    url: '/api/auth/refresh/',
-                    xhrFields: { withCredentials: true }
-                }).then(() => {
-                    // Retry the original request after refresh
-                    return $.ajax({
-                        url: url,
-                        xhrFields: { withCredentials: true },
-                        ...options
-                    });
-                }).fail(() => {
-                    // Refresh failed → force login
-                    window.location.href = '/accounts/login/';
+            return $.ajax({
+                url: '/api/auth/refresh/',
+                method: 'POST',
+                xhrFields: { withCredentials: true },
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                }
+            }).then(function () {
+                // Retry original request
+                return $.ajax({
+                    url: url,
+                    xhrFields: { withCredentials: true },
+                    ...options
                 });
-            } else {
-                // 403 → no permission or expired session, go to login
+            }).fail(function () {
                 window.location.href = '/accounts/login/';
-            }
+            });
+        }
+
+        if (xhr.status === 403) {
+            window.location.href = '/accounts/login/';
         }
     });
 }

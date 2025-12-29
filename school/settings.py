@@ -36,7 +36,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", default="*").split(',')
 # Safety guard
 if not any(ALLOWED_HOSTS):
     raise RuntimeError("ALLOWED_HOSTS is not set")
-    
+
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # Application definition
@@ -283,9 +283,9 @@ CONTENT_SECURITY_POLICY = {
 
         "base-uri": ["'self'"],
         "form-action": ["'self'"],
-        "frame-ancestors": [
-            "'self'",
-        ]
+        # "frame-ancestors": [
+        #     "'self'",
+        # ]
     }
 }
 
@@ -320,14 +320,26 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:8000"]
 # settings.py
 
-# Only send cookies over HTTPS
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
 
-# Prevent JS access
-SESSION_COOKIE_HTTPONLY = True
-CSRF_COOKIE_HTTPONLY = True
+# # Prevent JS access
+# SESSION_COOKIE_HTTPONLY = True
+# CSRF_COOKIE_HTTPONLY = True
+
+# # Limit cross-site cookie sending
+# SESSION_COOKIE_SAMESITE = "Strict"   # or "Lax"
+# CSRF_COOKIE_SAMESITE = "Strict"
+
+# USE_SECURE_COOKIES = not DEBUG # LIVE
+USE_SECURE_COOKIES = False
+SESSION_COOKIE_SECURE = USE_SECURE_COOKIES
+CSRF_COOKIE_SECURE = USE_SECURE_COOKIES
 
 # Limit cross-site cookie sending
-SESSION_COOKIE_SAMESITE = "Strict"   # or "Lax"
-CSRF_COOKIE_SAMESITE = "Strict"
+SESSION_COOKIE_SAMESITE = "Lax"   # or "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://45.118.132.74",
+    "http://localhost",
+    "http://127.0.0.1",
+]

@@ -3,7 +3,8 @@ let userData = null;
 function getUserProfile() {
     fetchWithRefresh('/api/user-profile/me/', {
         type: 'GET',
-        contentType: 'application/json'
+        contentType: 'application/json',
+        credentials: 'include',
     }).done(function(response) {
         console.log('GET PROFILE RESPONSE: ', response);
 

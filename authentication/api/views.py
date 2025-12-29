@@ -279,17 +279,18 @@ class UserLoginViewSet(viewsets.ViewSet):
             key="access",
             value=str(refresh.access_token),
             httponly=True,
-            secure=True,
-            samesite="Strict",
-            max_age=300  # 5 minutes
+            secure=False,   # 🔥 dynamic
+            samesite="Lax",                        # 🔥 MUST be Lax for HTTP
+            max_age=300,
         )
+
         response.set_cookie(
             key="refresh",
             value=str(refresh),
             httponly=True,
-            secure=True,
-            samesite="Strict",
-            max_age=7 * 24 * 60 * 60  # 1 week
+            secure=False,   # 🔥 dynamic
+            samesite="Lax",
+            max_age=7 * 24 * 60 * 60,
         )
         return response
 
