@@ -55,6 +55,21 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtualenv
+venv/
+.env
+
+# IDE
+.vscode/
+.idea/
+
+
 # Translations
 *.mo
 *.pot
