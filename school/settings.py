@@ -33,7 +33,10 @@ load_dotenv(env_file_path)
 DEBUG = False
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", default="*").split(',')
-
+# Safety guard
+if not any(ALLOWED_HOSTS):
+    raise RuntimeError("ALLOWED_HOSTS is not set")
+    
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # Application definition
