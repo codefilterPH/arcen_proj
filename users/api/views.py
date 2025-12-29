@@ -96,7 +96,7 @@ class ManageUsers(viewsets.ViewSet):
         print(f"User {request.user.username} is trying to access the list of users.")
 
         if not CheckUserPermission.check_role(user=request.user,
-                                              group_names=['Developer', 'COUNTPA Manager', 'COUNTPA Supervisor']):
+                                              group_names=['Developer', 'CEIS']):
             print("User does not have permission to access this resource.")
             return Response(
                 {'detail': 'You do not have permission to access this resource.'},
