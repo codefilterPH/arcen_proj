@@ -181,20 +181,29 @@ class SchoolOrgViewSet(viewsets.ModelViewSet):
         return self.update(request, *args, **kwargs)
 
     # ------------------------------------------------------------
-    # 🔹 DELETE — custom response
+    # 🔹 DELETE — custom response (with debug prints)
     # ------------------------------------------------------------
     def destroy(self, request, *args, **kwargs):
         """
         Delete a school by ID with confirmation message.
         """
+        print("🗑️ [DELETE] School delete request received")
+        print("➡️ Request user:", request.user)
+        print("➡️ Request path:", request.path)
+        print("➡️ Request method:", request.method)
+
         instance = self.get_object()
+        print("✅ School found:", instance.id, instance.name)
+
         instance_name = instance.name
         instance.delete()
+
+        print(f"❌ School deleted successfully: {instance_name}")
+
         return Response(
             {"message": f"School '{instance_name}' deleted successfully."},
             status=status.HTTP_204_NO_CONTENT
         )
-
     # ------------------------------------------------------------
     # 🔹 RETRIEVE SINGLE SCHOOL (DETAIL)
     # ------------------------------------------------------------

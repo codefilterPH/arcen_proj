@@ -11,12 +11,13 @@ function initializeAddSchoolForm() {
             processData: false,   // ✅ required for FormData
             contentType: false,   // ✅ let browser set multipart/form-data
         }).done(function (response) {
-            console.log("✅ School created:", response);
+            // console.log("✅ School created:", response);
 
             // Success message
-            showToastSwal("School added successfully!", "success    ");
+            showToastSwal("School added successfully!", "success");
             // Close modal
-            location.reload();  
+            $("#btnAddSchoolRefresh").click();
+            $("#btnRefresh").click();
 
         }).fail(function (xhr) {
             console.error("❌ Failed to create school:", xhr.status, xhr.responseText);

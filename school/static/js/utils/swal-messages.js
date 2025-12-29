@@ -35,7 +35,7 @@ function success_message(title = 'Success', message, showCancelButton = false) {
 function question_message(message, showCancelButton = true, callback) {
   return Swal.fire({
     title: 'Question',
-    text: message,
+    html: message,
     icon: 'question',
     showCancelButton: showCancelButton,
     confirmButtonText: 'Continue',
@@ -46,8 +46,15 @@ function question_message(message, showCancelButton = true, callback) {
       const backdrop = document.querySelector('.swal2-container');
       if (backdrop) backdrop.style.zIndex = 99998;
     }
-  }).then(callback);
+  }).then((result) => {
+    // ✅ SAFE GUARD
+    if (typeof callback === "function") {
+      callback(result);
+    }
+    return result; // ✅ allow Promise chaining
+  });
 }
+
 
 function stop_message(message, showCancelButton = false) {
   return Swal.fire({

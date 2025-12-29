@@ -95,6 +95,7 @@ class Command(BaseCommand):
             'data',
             'user_import_settings.json'
         )
+
         if not os.path.exists(config_path):
             raise CommandError(f"Settings file not found at: {config_path}")
 
@@ -114,7 +115,7 @@ class Command(BaseCommand):
         if not os.path.exists(excel_path):
             raise CommandError(f"Excel file not found: {excel_path}")
 
-        # 2️⃣ Load Excel (no header row)
+        # 2️⃣ Load Excel
         df = pd.read_excel(excel_path, sheet_name=sheetname, header=None)
         self.stdout.write(self.style.NOTICE(
             f"Loaded '{sheetname}' with {len(df)} rows (no headers)."
@@ -124,50 +125,92 @@ class Command(BaseCommand):
 
         # 3️⃣ Iterate rows
         for idx, row in df.iterrows():
-            username = str(row.iloc[column_index_from_string(col_map.get('username', 'A')) - 1]).strip() or ''
+
+            # ------------------------------------------------------------
+            # 🔑 USERNAME RESOLUTION (UNCHANGED)
+            # ------------------------------------------------------------
+            username = ""
+
+            if 'username' in col_map:
+                try:
+                    username = str(
+                        row.iloc[column_index_from_string(col_map['username']) - 1]
+                    ).strip()
+                except Exception:
+                    username = ""
+
+            email = ""
+            if not username and 'email' in col_map:
+                try:
+                    email = str(
+                        row.iloc[column_index_from_string(col_map['email']) - 1]
+                    ).strip().lower()
+                    username = email
+                except Exception:
+                    pass
+
             if not username:
-                continue  # Skip blank rows
+                username = f"imported_user_{idx + 1:06d}"
+                self.stdout.write(self.style.WARNING(
+                    f"⚠️ Row {idx + 1}: Generated username '{username}'"
+                ))
 
-            email = str(row.iloc[column_index_from_string(col_map.get('email', 'B')) - 1]).strip() or ''
-            first_name = str(row.iloc[column_index_from_string(col_map.get('first_name', 'C')) - 1]).strip() or ''
-            last_name = str(row.iloc[column_index_from_string(col_map.get('last_name', 'D')) - 1]).strip() or ''
+            if not email:
+                email = str(
+                    row.iloc[column_index_from_string(col_map.get('email', 'B')) - 1]
+                ).strip().lower()
 
-            user, created_user = User.objects.update_or_create(
-                username=username,
-                defaults=dict(email=email, first_name=first_name, last_name=last_name),
-            )
+            first_name = str(
+                row.iloc[column_index_from_string(col_map.get('first_name', 'C')) - 1]
+            ).strip()
 
-            profile, created_profile = UserProfile.objects.get_or_create(user=user)
+            last_name = str(
+                row.iloc[column_index_from_string(col_map.get('last_name', 'D')) - 1]
+            ).strip()
+
+            # ------------------------------------------------------------
+            # 👤 AUTH USER (REUSE IF EXISTS)
+            # ------------------------------------------------------------
+            user = User.objects.filter(username=username).first()
+
+            if not user:
+                user = User.objects.create_user(
+                    username=username,
+                    email=email,
+                    first_name=first_name,
+                    last_name=last_name,
+                    password=config.get("default_password", "ChangeMe123!")
+                )
+                created += 1
+                self.stdout.write(self.style.SUCCESS(
+                    f"🆕 Created user: {username}"
+                ))
+            else:
+                updated += 1
+
+            # ------------------------------------------------------------
+            # 👤 USER PROFILE (AUTO-ENROLL / UPDATE)
+            # ------------------------------------------------------------
+            profile, _ = UserProfile.objects.get_or_create(user=user)
 
             for field, col_letter in col_map.items():
                 if field in ['username', 'email', 'first_name', 'last_name']:
                     continue
+
                 try:
                     value = row.iloc[column_index_from_string(col_letter) - 1]
+
                     if pd.notna(value) and hasattr(profile, field):
                         parsed_val = parse_excel_date(value)
 
-                        # Skip invalid or ancient dates (<1900)
                         if isinstance(parsed_val, (datetime, pd.Timestamp)) and parsed_val.year < 1900:
-                            self.stdout.write(self.style.WARNING(
-                                f"⚠️ Row {idx + 1}: Skipped invalid ancient date '{value}' for field '{field}'"
-                            ))
                             continue
 
-                        # Format parsed dates properly
                         if isinstance(parsed_val, pd.Timestamp):
-                            if field == "birth_date":
-                                parsed_val = parsed_val.strftime('%Y-%m-%d')
-                            else:
-                                parsed_val = parsed_val.strftime('%Y-%m-%d %H:%M:%S')
+                            parsed_val = parsed_val.strftime('%Y-%m-%d')
 
                         val_str = str(parsed_val).strip()
 
-                        # 🧩 Skip invalid or None values
-                        if field == "birth_date" and (not val_str or val_str.lower() in ["nan", "none"]):
-                            continue
-
-                        # 🧹 Clean and normalize contact numbers
                         if field == "contact_number":
                             val_str = clean_contact_number(val_str)
 
@@ -175,17 +218,12 @@ class Command(BaseCommand):
 
                 except Exception as e:
                     self.stdout.write(self.style.WARNING(
-                        f"⚠️ Row {idx + 1}: Skipped field '{field}' due to error: {e}"
+                        f"⚠️ Row {idx + 1}: Field '{field}' skipped ({e})"
                     ))
 
             profile.save()
 
-            if created_user or created_profile:
-                created += 1
-            else:
-                updated += 1
-
         # ✅ Summary
         self.stdout.write(self.style.SUCCESS(
-            f"✅ Import completed — {created} created, {updated} updated."
+            f"✅ Import completed — {created} users created, {updated} reused."
         ))

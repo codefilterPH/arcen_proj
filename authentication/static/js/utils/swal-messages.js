@@ -1,111 +1,103 @@
 function error_message(message, showCancelButton = false) {
-    return Swal.fire({
-        title: 'Error',
-        text: message,
-        icon: 'error',
-        confirmButtonText: 'Continue',
-        showCancelButton: showCancelButton,
-        cancelButtonText: 'Cancel'
-    });
+  return Swal.fire({
+    title: 'Error',
+    text: message,
+    icon: 'error',
+    confirmButtonText: 'Continue',
+    showCancelButton: showCancelButton,
+    cancelButtonText: 'Cancel',
+    customClass: { popup: 'swal-highest-z' },
+    didOpen: (popup) => {
+      popup.style.zIndex = 99999;
+      const backdrop = document.querySelector('.swal2-container');
+      if (backdrop) backdrop.style.zIndex = 99998;
+    }
+  });
 }
 
 function success_message(title = 'Success', message, showCancelButton = false) {
-    return Swal.fire({
-        title: title,
-        text: message,
-        icon: 'success',
-        confirmButtonText: 'Continue',
-        showCancelButton: showCancelButton,
-        cancelButtonText: 'Cancel'
-    });
+  return Swal.fire({
+    title: title,
+    text: message,
+    icon: 'success',
+    confirmButtonText: 'Continue',
+    showCancelButton: showCancelButton,
+    cancelButtonText: 'Cancel',
+    customClass: { popup: 'swal-highest-z' },
+    didOpen: (popup) => {
+      popup.style.zIndex = 99999;
+      const backdrop = document.querySelector('.swal2-container');
+      if (backdrop) backdrop.style.zIndex = 99998;
+    }
+  });
 }
 
-function warning_message(message, showCancelButton = false) {
-    return Swal.fire({
-        title: 'Warning',
-        text: message,
-        icon: 'warning',
-        confirmButtonText: 'Ok',
-        showCancelButton: showCancelButton,
-        cancelButtonText: 'Cancel'
-    });
+function question_message(message, showCancelButton = true, callback) {
+  return Swal.fire({
+    title: 'Question',
+    html: message,
+    icon: 'question',
+    showCancelButton: showCancelButton,
+    confirmButtonText: 'Continue',
+    cancelButtonText: 'Cancel',
+    customClass: { popup: 'swal-highest-z' },
+    didOpen: (popup) => {
+      popup.style.zIndex = 99999;
+      const backdrop = document.querySelector('.swal2-container');
+      if (backdrop) backdrop.style.zIndex = 99998;
+    }
+  }).then((result) => {
+    // ✅ SAFE GUARD
+    if (typeof callback === "function") {
+      callback(result);
+    }
+    return result; // ✅ allow Promise chaining
+  });
 }
 
-function info_message(message, showCancelButton = false) {
-    return Swal.fire({
-        title: 'Information',
-        text: message,
-        icon: 'info',
-        confirmButtonText: 'Got it',
-        showCancelButton: showCancelButton,
-        cancelButtonText: 'Cancel'
-    });
-}
-
-function question_message(message, callback, showCancelButton = true) {
-    Swal.fire({
-        title: 'Question',
-        text: message,
-        icon: 'question',
-        showCancelButton: showCancelButton,
-        confirmButtonText: 'Continue',
-        cancelButtonText: 'Cancel'
-    }).then((result) => {
-        if (callback) {
-            callback(result.isConfirmed);
-        }
-    });
-}
 
 function stop_message(message, showCancelButton = false) {
-    return Swal.fire({
-        title: 'Stop',
-        text: message,
-        icon: 'warning',
-        confirmButtonText: 'Ok',
-        showCancelButton: showCancelButton,
-        cancelButtonText: 'Cancel'
-    });
+  return Swal.fire({
+    title: 'Stop',
+    text: message,
+    icon: 'warning',
+    confirmButtonText: 'Ok',
+    showCancelButton: showCancelButton,
+    cancelButtonText: 'Cancel',
+    customClass: { popup: 'swal-highest-z' },
+    didOpen: (popup) => {
+      popup.style.zIndex = 99999;
+      const backdrop = document.querySelector('.swal2-container');
+      if (backdrop) backdrop.style.zIndex = 99998;
+    }
+  });
 }
-
 
 function showToastSwal(message, icon = 'error') {
-    const validIcons = ['success', 'error', 'warning', 'info', 'question'];
+  const validIcons = ['success', 'error', 'warning', 'info', 'question'];
+  const iconMap = {
+    danger: 'error',
+    primary: 'info',
+    secondary: 'info',
+    dark: 'info',
+    light: 'info'
+  };
 
-    const iconMap = {
-        danger: 'error',
-        primary: 'info',
-        secondary: 'info',
-        dark: 'info',
-        light: 'info'
-    };
+  if (!validIcons.includes(icon)) {
+    icon = iconMap[icon] || 'info';
+  }
 
-    if (!validIcons.includes(icon)) {
-        icon = iconMap[icon] || 'info';
+  Swal.fire({
+    toast: true,
+    icon: icon,
+    title: message,
+    position: 'bottom-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    customClass: { popup: 'swal-toast-zindex' },
+    didOpen: (toast) => {
+      toast.style.zIndex = 99999; // 🔝 Force toast above everything
     }
-
-    Swal.fire({
-        toast: true,
-        icon: icon,
-        title: message,
-        position: 'bottom-end', // 👈 Bottom right corner
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true
-    });
+  });
 }
-
-/* SAMPLE USAGE
-error_message('Something went wrong!');
-success_message('Data saved successfully!');
-warning_message('This action is irreversible!');
-info_message('New update available.');
-question_message('Are you sure you want to continue?', (result) => {
-    if (result) {
-        console.log('User clicked Continue');
-    } else {
-        console.log('User clicked Cancel');
-    }
-});
-stop_message('You are not allowed to proceed!');
-*/
