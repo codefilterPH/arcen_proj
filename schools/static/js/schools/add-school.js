@@ -14,16 +14,9 @@ function initializeAddSchoolForm() {
             console.log("✅ School created:", response);
 
             // Success message
-            success_message("School added successfully!");
-
-            // Reset form
-            form.reset();
-
+            showToastSwal("School added successfully!", "success    ");
             // Close modal
-            $("#addSchoolModal").modal("hide");
-
-            // Optionally refresh schools grid
-            loadSchoolsGrid(); // ← write a function to reload schools if needed
+            location.reload();  
 
         }).fail(function (xhr) {
             console.error("❌ Failed to create school:", xhr.status, xhr.responseText);
