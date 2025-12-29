@@ -101,8 +101,6 @@ class AddUserForm(forms.ModelForm):
         model = User
         fields = ['username', 'email', 'first_name', 'last_name', 'password']
 
-
-
 class UserGroupForm(forms.Form):
     """Form for assigning designations to a user."""
 
