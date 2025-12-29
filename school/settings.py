@@ -30,7 +30,7 @@ env_file_path = os.path.join(BASE_DIR, 'school', 'secrets', '.env')
 load_dotenv(env_file_path)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", default="*").split(',')
 
