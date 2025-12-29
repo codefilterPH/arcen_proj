@@ -8,9 +8,9 @@ from django.conf import settings
 import qrcode
 import io, base64, random
 import os
-
+from simple_history.models import HistoricalRecords
 from schools.models import SchoolOrg, Flight
-from users.models import Designation, Classification  # ✅ Adjust import paths to your project structure
+from users.models import Designation, Classification
 
 
 class Student(models.Model):
@@ -228,6 +228,136 @@ class Student(models.Model):
 
         return full_name.title()
 
+class StudentDocument(models.Model):
+    """
+    Documents uploaded by or for a student (e-Library style).
+    Supports preview, metadata, and full audit history.
+    """
+
+    FILE_TYPE_CHOICES = [
+        ('pdf', 'PDF'),
+        ('image', 'Image'),
+        ('doc', 'Document'),
+        ('other', 'Other'),
+    ]
+
+    # 🔹 Relations
+    student = models.ForeignKey(
+        Student,
+        on_delete=models.CASCADE,
+        related_name='documents'
+    )
+
+    uploaded_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='uploaded_student_documents'
+    )
+
+    # 🔹 File Data
+    file = models.FileField(
+        upload_to='students/documents/%Y/%m/'
+    )
+
+    original_filename = models.CharField(
+        max_length=255,
+        help_text="Original filename at upload time."
+    )
+
+    file_type = models.CharField(
+        max_length=20,
+        choices=FILE_TYPE_CHOICES,
+        blank=True,
+        null=True
+    )
+
+    file_size = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        help_text="File size in bytes."
+    )
+
+    mime_type = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
+
+    # 🔹 Metadata (shown in UI)
+    title = models.CharField(
+        max_length=255,
+        help_text="Display name of the document."
+    )
+
+    description = models.TextField(
+        blank=True,
+        null=True
+    )
+
+    # 🔹 Status / Control
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Soft delete control."
+    )
+
+    is_public = models.BooleanField(
+        default=False,
+        help_text="If visible outside student scope."
+    )
+
+    # 🔹 Timestamps
+    uploaded_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    # 🔹 History Tracking
+    history = HistoricalRecords()
+
+    class Meta:
+        ordering = ['-uploaded_at']
+        indexes = [
+            models.Index(fields=['student', 'uploaded_at']),
+            models.Index(fields=['file_type']),
+        ]
+
+    def __str__(self):
+        return f"{self.title} ({self.student})"
+
+    # -------------------------------
+    # Utility Methods
+    # -------------------------------
+
+    def detect_file_type(self):
+        if self.file.name.lower().endswith('.pdf'):
+            return 'pdf'
+        if self.file.name.lower().endswith(('.jpg', '.jpeg', '.png', '.webp')):
+            return 'image'
+        if self.file.name.lower().endswith(('.doc', '.docx')):
+            return 'doc'
+        return 'other'
+
+    def clean(self):
+        allowed_ext = ('.pdf', '.jpg', '.jpeg', '.png', '.webp', '.doc', '.docx')
+        if self.file and not self.file.name.lower().endswith(allowed_ext):
+            raise ValidationError("Unsupported file type.")
+
+    def save(self, *args, **kwargs):
+        if self.file and not self.file_type:
+            self.file_type = self.detect_file_type()
+
+        if self.file and not self.file_size:
+            self.file_size = self.file.size
+
+        if not self.original_filename and self.file:
+            self.original_filename = os.path.basename(self.file.name)
+
+        super().save(*args, **kwargs)
 
 class FlightMembership(models.Model):
     """Students belong to a flight."""

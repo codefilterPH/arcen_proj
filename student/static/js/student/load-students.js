@@ -223,8 +223,10 @@ function initStudentsModal(options = {}) {
           <i class="fas fa-edit"></i>
         </button>
 
-        <button class="btn btn-sm btn-outline-success btnUploadStudentFile"
+        <button class="btn btn-sm btn-outline-success btnUploadStudentFile js-open-upload-modal"
                 data-student-id="${student.id}"
+                data-bs-toggle="modal"
+                data-bs-target="#studentDocumentsModal"
                 title="Upload File">
           <i class="fas fa-upload"></i>
         </button>

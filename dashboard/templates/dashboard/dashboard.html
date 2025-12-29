@@ -5,6 +5,23 @@
 <div id="layoutSidenav_content">
   <div id="app">
     <main>
+        <div class="row g-0">
+          <!-- 🚧 DEVELOPMENT MODE ALERT -->
+          <div class="alert alert-warning alert-dismissible fade show rounded-0 border-0 mb-1 w-100"
+               role="alert">
+            <div class="d-flex align-items-center gap-2">
+              <i class="fas fa-tools"></i>
+              <div>
+                <strong>Development Mode:</strong>
+                This section is currently under development. Data and actions shown here are for demonstration only.
+              </div>
+            </div>
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"></button>
+          </div>
+      </div>
       <!-- Header -->
       <div class="dashboard-header text-center mb-3">
         <img src="{% static 'img/arcen.png' %}" alt="School Logo" class="mx-auto drop-shadow">
@@ -16,15 +33,15 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="metric-card total-strength">
           <h5>Total Strength</h5>
-          <h4>120</h4>
+          <h4>0</h4>
         </div>
         <div class="metric-card present">
           <h5>Present</h5>
-          <h4>108</h4>
+          <h4>0</h4>
         </div>
         <div class="metric-card absent">
           <h5>Absent</h5>
-          <h4>12</h4>
+          <h4>0</h4>
         </div>
       </div>
 
@@ -33,11 +50,7 @@
         <div class="info-card">
           <h3>Absent Today</h3>
           <ul class="absent-list">
-            <li>John Doe</li>
-            <li>Jane Smith</li>
-            <li>Mark Johnson</li>
-            <li>Sarah Lee</li>
-            <li>+8 more...</li>
+            <li>Names populate here(Ongoing Development)</li>
           </ul>
         </div>
         <div class="info-card">
@@ -59,19 +72,19 @@
                 <div class="grid grid-cols-4 gap-2 text-center text-sm">
                   <div>
                     <p class="text-gray-500 text-xs">Strength</p>
-                    <p class="font-bold">30</p>
+                    <p class="font-bold">0</p>
                   </div>
                   <div>
                     <p class="text-gray-500 text-xs">Present</p>
-                    <p class="font-bold text-green-600">27</p>
+                    <p class="font-bold text-green-600">0</p>
                   </div>
                   <div>
                     <p class="text-gray-500 text-xs">Absent</p>
-                    <p class="font-bold text-amber-600">2</p>
+                    <p class="font-bold text-amber-600">0</p>
                   </div>
                   <div>
                     <p class="text-gray-500 text-xs">Hospitalized</p>
-                    <p class="font-bold text-red-600">1</p>
+                    <p class="font-bold text-red-600">0</p>
                   </div>
                 </div>
               </div>
@@ -84,19 +97,19 @@
                 <div class="grid grid-cols-4 gap-2 text-center text-sm">
                   <div>
                     <p class="text-gray-500 text-xs">Strength</p>
-                    <p class="font-bold">28</p>
+                    <p class="font-bold">0</p>
                   </div>
                   <div>
                     <p class="text-gray-500 text-xs">Present</p>
-                    <p class="font-bold text-green-600">26</p>
+                    <p class="font-bold text-green-600">0</p>
                   </div>
                   <div>
                     <p class="text-gray-500 text-xs">Absent</p>
-                    <p class="font-bold text-amber-600">1</p>
+                    <p class="font-bold text-amber-600">0</p>
                   </div>
                   <div>
                     <p class="text-gray-500 text-xs">Hospitalized</p>
-                    <p class="font-bold text-red-600">1</p>
+                    <p class="font-bold text-red-600">0</p>
                   </div>
                 </div>
               </div>
@@ -109,19 +122,19 @@
                 <div class="grid grid-cols-4 gap-2 text-center text-sm">
                   <div>
                     <p class="text-gray-500 text-xs">Strength</p>
-                    <p class="font-bold">32</p>
+                    <p class="font-bold">0</p>
                   </div>
                   <div>
                     <p class="text-gray-500 text-xs">Present</p>
-                    <p class="font-bold text-green-600">29</p>
+                    <p class="font-bold text-green-600">0</p>
                   </div>
                   <div>
                     <p class="text-gray-500 text-xs">Absent</p>
-                    <p class="font-bold text-amber-600">2</p>
+                    <p class="font-bold text-amber-600">0</p>
                   </div>
                   <div>
                     <p class="text-gray-500 text-xs">Hospitalized</p>
-                    <p class="font-bold text-red-600">1</p>
+                    <p class="font-bold text-red-600">0</p>
                   </div>
                 </div>
               </div>

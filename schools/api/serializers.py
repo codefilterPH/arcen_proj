@@ -7,17 +7,25 @@ from rest_framework import serializers
 from schools.models import SchoolYear
 
 class SchoolYearSerializer(serializers.ModelSerializer):
-    school_name = serializers.CharField(source='school.name', read_only=True)
+    start_date = serializers.DateField(format="%d %B %Y")
+    end_date = serializers.DateField(format="%d %B %Y")
+
+    start_date_raw = serializers.DateField(
+        source="start_date", format="%Y-%m-%d", read_only=True
+    )
+    end_date_raw = serializers.DateField(
+        source="end_date", format="%Y-%m-%d", read_only=True
+    )
 
     class Meta:
         model = SchoolYear
         fields = [
-            'id',
-            'school',
-            'school_name',
-            'name',
-            'start_date',
-            'end_date',
+            "id",
+            "name",
+            "start_date",
+            "end_date",
+            "start_date_raw",
+            "end_date_raw",
         ]
 
 

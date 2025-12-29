@@ -66,7 +66,8 @@
 {% endblock %}
 {% block content %}
 <!-- 🔹 Students Modal -->
-<div class="modal fade" id="studentsModal" tabindex="-1" aria-labelledby="studentsModalLabel" aria-hidden="true">
+<div class="modal fade" id="studentsModal" tabindex="-1"
+     aria-labelledby="studentsModalLabel">
   <div class="modal-dialog modal-xl modal-fullscreen-sm-down">
     <div class="modal-content shadow-lg">
 
@@ -166,14 +167,69 @@
 </div>
 </div>
 {% include 'student/modals/edit-student.html' %}
+{% include 'student/modals/upload-document.html' %}
 {% endblock %}
 {% block extra_js %}
 
 <script src="{% static 'js/student/remove-student.js' %}"></script>
 <script src="{% static 'js/student/load-students.js' %}"></script>
 <script>
-  $(document).ready(function () {
-    initStudentsModal();
+$(function () {
+
+  /* ===============================
+     INIT
+  =============================== */
+  initStudentsModal();
+
+  const $studentsModal = $("#studentsModal");
+  const $uploadModal   = $("#studentDocumentsModal");
+
+  if (!$studentsModal.length || !$uploadModal.length) return;
+
+  const studentsModal = new bootstrap.Modal($studentsModal[0], { focus: true });
+  const uploadModal   = new bootstrap.Modal($uploadModal[0],   { focus: true });
+
+  /* ===============================
+     AUTO REFRESH WHEN STUDENTS MODAL OPENS
+  =============================== */
+  $studentsModal.on("shown.bs.modal", function () {
+    $("#btnRefreshStudents").trigger("click");
   });
+
+  /* ===============================
+     OPEN Upload (from Students)
+  =============================== */
+  $(document).on("click", ".js-open-upload-modal", function (e) {
+    e.preventDefault();
+
+    // ✅ CRITICAL: blur focused element BEFORE hiding modal
+    document.activeElement && document.activeElement.blur();
+
+    // Wait until Students modal fully closes
+    $studentsModal.one("hidden.bs.modal", function () {
+      uploadModal.show();
+    });
+
+    studentsModal.hide();
+  });
+
+  /* ===============================
+     CANCEL Upload
+  =============================== */
+  $uploadModal.on("click", ".js-upload-cancel", function (e) {
+    e.preventDefault();
+
+    document.activeElement && document.activeElement.blur();
+    uploadModal.hide();
+  });
+
+  /* ===============================
+     AFTER Upload Closed → Reopen Students
+  =============================== */
+  $uploadModal.on("hidden.bs.modal", function () {
+    studentsModal.show();
+  });
+
+});
 </script>
 {% endblock %}

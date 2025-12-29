@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'django_celery_beat',
+    'simple_history',
 ]
 
 MIDDLEWARE = [
@@ -71,7 +72,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "auditlog.middleware.AuditlogMiddleware",
     'csp.middleware.CSPMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
+
 
 ROOT_URLCONF = 'school.urls'
 

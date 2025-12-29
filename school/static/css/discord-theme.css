@@ -1,0 +1,262 @@
+/* =====================================================
+   DISCORD WHITE THEME
+   Drop-in override for Bootstrap / SB Admin
+   ===================================================== */
+
+/* --------------------
+   ROOT VARIABLES
+-------------------- */
+:root {
+  --discord-bg: #f2f3f5;
+  --discord-panel: #ffffff;
+  --discord-sidebar: #ebedef;
+  --discord-hover: #e3e5e8;
+  --discord-border: #d1d5db;
+
+  --discord-text: #2c2f33;
+  --discord-muted: #6b7280;
+  --discord-accent: #5865f2;
+  --discord-danger: #ed4245;
+  --discord-success: #3ba55d;
+
+  --discord-radius: 8px;
+  --discord-radius-sm: 6px;
+  --discord-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+/* --------------------
+   GLOBAL RESET
+-------------------- */
+body {
+  background: var(--discord-bg) !important;
+  color: var(--discord-text) !important;
+  font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+/* Remove harsh shadows */
+.card,
+.modal-content,
+.dropdown-menu {
+  box-shadow: var(--discord-shadow) !important;
+  border-radius: var(--discord-radius) !important;
+  border: 1px solid var(--discord-border) !important;
+}
+
+/* --------------------
+   TOP NAVBAR
+-------------------- */
+.topnav,
+.navbar {
+  background: var(--discord-panel) !important;
+  border-bottom: 1px solid var(--discord-border);
+}
+
+.navbar-brand,
+.navbar .nav-link {
+  color: var(--discord-text) !important;
+}
+
+.navbar .nav-link:hover {
+  background: var(--discord-hover);
+  border-radius: var(--discord-radius-sm);
+}
+
+/* --------------------
+   SIDEBAR
+-------------------- */
+#layoutSidenav_nav,
+.sidenav {
+  background: var(--discord-sidebar) !important;
+  border-right: 1px solid var(--discord-border);
+}
+
+.sidenav .sidenav-menu .nav-link {
+  color: var(--discord-text);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--discord-radius-sm);
+  margin: 2px 6px;
+  transition: background 0.15s ease;
+}
+
+.sidenav .sidenav-menu .nav-link:hover {
+  background: var(--discord-hover);
+}
+
+.sidenav .sidenav-menu .nav-link.active {
+  background: var(--discord-accent);
+  color: #fff;
+}
+
+/* Icons */
+.sidenav .nav-link i {
+  color: var(--discord-muted);
+}
+
+.sidenav .nav-link.active i {
+  color: #fff;
+}
+
+/* --------------------
+   CONTENT AREA
+-------------------- */
+#layoutSidenav_content {
+  background: var(--discord-bg);
+}
+
+/* --------------------
+   CARDS
+-------------------- */
+.card {
+  background: var(--discord-panel);
+}
+
+.card-header {
+  background: transparent;
+  border-bottom: 1px solid var(--discord-border);
+  font-weight: 600;
+}
+
+.card-footer {
+  background: transparent;
+  border-top: 1px solid var(--discord-border);
+}
+
+/* --------------------
+   BUTTONS
+-------------------- */
+.btn {
+  border-radius: var(--discord-radius-sm);
+  font-weight: 500;
+}
+
+.btn-primary {
+  background: var(--discord-accent);
+  border-color: var(--discord-accent);
+}
+
+.btn-primary:hover {
+  background: #4752c4;
+}
+
+.btn-outline-secondary {
+  border-color: var(--discord-border);
+  color: var(--discord-text);
+}
+
+.btn-outline-secondary:hover {
+  background: var(--discord-hover);
+}
+
+/* --------------------
+   TABLES
+-------------------- */
+.table {
+  background: var(--discord-panel);
+}
+
+.table thead th {
+  border-bottom: 1px solid var(--discord-border);
+  color: var(--discord-muted);
+  font-weight: 600;
+}
+
+.table tbody tr:hover {
+  background: var(--discord-hover);
+}
+
+/* --------------------
+   FORMS
+-------------------- */
+.form-control,
+.form-select {
+  border-radius: var(--discord-radius-sm);
+  border: 1px solid var(--discord-border);
+  background: #fff;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--discord-accent);
+  box-shadow: 0 0 0 1px var(--discord-accent);
+}
+
+/* --------------------
+   MODALS
+-------------------- */
+.modal-content {
+  background: var(--discord-panel);
+}
+
+.modal-header,
+.modal-footer {
+  border-color: var(--discord-border);
+}
+
+/* --------------------
+   DROPDOWNS
+-------------------- */
+.dropdown-menu {
+  background: var(--discord-panel);
+}
+
+.dropdown-item {
+  border-radius: var(--discord-radius-sm);
+}
+
+.dropdown-item:hover {
+  background: var(--discord-hover);
+}
+
+/* --------------------
+   BADGES
+-------------------- */
+.badge {
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.badge-success {
+  background: var(--discord-success);
+}
+
+.badge-danger {
+  background: var(--discord-danger);
+}
+
+/* --------------------
+   SCROLLBARS (Discord-style)
+-------------------- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* --------------------
+   LINKS
+-------------------- */
+a {
+  color: var(--discord-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* --------------------
+   DISABLE BOOTSTRAP DARK
+-------------------- */
+.bg-dark,
+.text-white {
+  background: var(--discord-panel) !important;
+  color: var(--discord-text) !important;
+}

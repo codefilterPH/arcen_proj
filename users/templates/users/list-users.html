@@ -81,8 +81,20 @@
 
 <script src="{% static 'js/users/load-users.js' %}"></script>
 <script>
-    $(document).ready(function () {
-        initializeUsersData();
+    const usersContainer = document.getElementById('usersContainer');
+
+    let usersLoaded = false;
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !usersLoaded) {
+                initializeUsersData();
+                usersLoaded = true;
+            }
+        });
     });
+
+    observer.observe(usersContainer);
+
 </script>
 {% endblock %}

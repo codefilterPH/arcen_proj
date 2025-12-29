@@ -1,0 +1,314 @@
+{% load static %}
+
+<!-- ========================= -->
+<!-- STUDENT DOCUMENTS MODAL -->
+<!-- ========================= -->
+<div class="modal fade"
+     id="studentDocumentsModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content shadow-lg rounded-3">
+
+      <!-- ========================= -->
+      <!-- MODAL HEADER -->
+      <!-- ========================= -->
+      <div class="modal-header">
+
+        <h5 class="modal-title d-flex align-items-center gap-2">
+          <i class="fas fa-folder-open"></i>
+          Student Documents
+        </h5>
+        <button type="button"
+                class="btn-close js-upload-cancel"
+                data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
+
+      <!-- ========================= -->
+      <!-- MODAL BODY -->
+      <!-- ========================= -->
+      <div class="modal-body p-0">
+
+        <div class="container-fluid">
+          <div class="row g-0">
+              <!-- 🚧 DEVELOPMENT MODE ALERT -->
+              <div class="alert alert-warning alert-dismissible fade show rounded-0 border-0 mb-1 w-100"
+                   role="alert">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="fas fa-tools"></i>
+                  <div>
+                    <strong>Development Mode:</strong>
+                    This section is currently under development. Data and actions shown here are for demonstration only.
+                  </div>
+                </div>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close"></button>
+              </div>
+          </div>
+          <div class="row g-0">
+
+            <!-- ================================= -->
+            <!-- LEFT: STUDENT CONTEXT -->
+            <!-- ================================= -->
+            <div class="col-lg-3 bg-light border-end p-3 text-center">
+
+              <img id="studentProfilePic"
+                   src="{% static 'img/users/avatars/panda.png' %}"
+                   class="img-fluid rounded-circle mb-3 shadow d-block mx-auto"
+                   style="width:140px;height:140px;object-fit:cover;">
+
+              <h6 class="fw-bold mb-0" id="studentFullName">
+                STUDENT NAME
+              </h6>
+
+              <small class="text-muted d-block mb-3">
+                Student Record
+              </small>
+
+              <div class="text-start small mb-3">
+                <div class="fw-semibold text-uppercase text-muted">
+                  Student ID
+                </div>
+                <div id="student_id" class="fw-bold"></div>
+              </div>
+
+              <img id="studentQrCode"
+                   src="{% static 'img/static_qr.png' %}"
+                   class="img-fluid border rounded p-2 bg-white"
+                   style="max-width:140px;"
+                   alt="QR Code">
+            </div>
+
+            <!-- ================================= -->
+            <!-- RIGHT: DOCUMENT CARDS -->
+            <!-- ================================= -->
+            <div class="col-lg-9 p-4">
+
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-semibold text-primary mb-0">
+                  Uploaded Documents
+                </h6>
+
+                <button class="btn btn-sm btn-primary">
+                  <i class="fas fa-upload me-1"></i> Upload
+                </button>
+              </div>
+
+              <!-- DOCUMENT GRID -->
+              <div class="row g-3" id="studentDocumentGrid">
+
+                <!-- DOCUMENT CARD -->
+                <div class="col-md-4">
+                  <div class="doc-card">
+
+                    <!-- Hover Actions -->
+                    <div class="doc-actions">
+                      <button class="btn btn-sm btn-light"
+                              onclick="editDocument(1)">
+                        <i class="fas fa-pen"></i>
+                      </button>
+                      <button class="btn btn-sm btn-danger"
+                              onclick="deleteDocument(1)">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="doc-preview">
+                      <iframe src="/media/students/documents/sample.pdf#toolbar=0"
+                              loading="lazy"></iframe>
+                    </div>
+
+                    <!-- Filename -->
+                    <div class="doc-title">
+                      Enrollment_Form.pdf
+                    </div>
+
+                  </div>
+                </div>
+                <!-- END CARD -->
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================= -->
+      <!-- MODAL FOOTER -->
+      <!-- ========================= -->
+      <div class="modal-footer bg-light">
+        <button type="button"
+                class="btn btn-secondary js-upload-cancel"
+                data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ========================= -->
+<!-- STYLES (MODAL-SCOPED) -->
+<!-- ========================= -->
+{% block extra_css %}
+<style>
+  .doc-card{
+    position:relative;
+    background:#fff;
+    border:1px solid #e3e5e8;
+    border-radius:14px;
+    overflow:hidden;
+    transition: all .15s ease;
+    height:100%;
+  }
+
+  .doc-card:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,.12);
+  }
+
+  .doc-preview{
+    height:180px;
+    background:#f3f4f6;
+    border-bottom:1px solid #e3e5e8;
+    overflow:hidden;
+  }
+
+  .doc-preview iframe{
+    width:100%;
+    height:100%;
+    border:0;
+  }
+
+  .doc-title{
+    padding:10px 12px;
+    font-size:.85rem;
+    font-weight:600;
+    text-align:center;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    color:#2c2f33;
+  }
+
+  .doc-actions{
+    position:absolute;
+    top:8px;
+    right:8px;
+    display:flex;
+    gap:6px;
+    opacity:0;
+    transform: translateY(-4px);
+    transition: all .15s ease;
+    z-index:10;
+  }
+
+  .doc-card:hover .doc-actions{
+    opacity:1;
+    transform: translateY(0);
+  }
+
+  .doc-actions .btn{
+    border-radius:10px;
+    padding:4px 7px;
+  }
+</style>
+{% endblock %}
+<script>
+$(function () {
+
+  /* ============================
+     DUMMY DATA (TEMP)
+  ============================ */
+  const dummyStudent = {
+    full_name: "John D. Cruz",
+    student_id: "STU-2024-001",
+    avatar: "{% static 'img/users/avatars/default.png' %}",
+    qr: "{% static 'img/sample_qr.png' %}"
+  };
+
+  const dummyDocuments = [
+    { id: 1, name: "Enrollment_Form.pdf" },
+    { id: 2, name: "Medical_Clearance.pdf" },
+    { id: 3, name: "Consent_Letter.pdf" }
+  ];
+
+  /* ============================
+     ONGOING DEVELOPMENT ALERT
+  ============================ */
+  function devAlert(feature) {
+    alert("🚧 " + feature + " is under ongoing development.");
+  }
+
+  /* ============================
+     RENDER DOCUMENT CARDS
+  ============================ */
+  function renderDummyDocuments() {
+    const $grid = $("#studentDocumentGrid");
+    $grid.empty();
+
+    dummyDocuments.forEach(doc => {
+      $grid.append(`
+        <div class="col-md-4">
+          <div class="doc-card">
+
+            <div class="doc-actions">
+              <button class="btn btn-sm btn-light js-edit-doc" data-id="${doc.id}">
+                <i class="fas fa-pen"></i>
+              </button>
+              <button class="btn btn-sm btn-danger js-delete-doc" data-id="${doc.id}">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+
+            <div class="doc-preview d-flex align-items-center justify-content-center text-muted">
+              <i class="fas fa-file-pdf fa-3x"></i>
+            </div>
+
+            <div class="doc-title" title="${doc.name}">
+              ${doc.name}
+            </div>
+
+          </div>
+        </div>
+      `);
+    });
+  }
+
+  /* ============================
+     WHEN MODAL OPENS → LOAD DUMMY DATA
+  ============================ */
+  $("#studentDocumentsModal").on("shown.bs.modal", function () {
+
+    $("#studentFullName").text(dummyStudent.full_name);
+    $("#student_id").text(dummyStudent.student_id);
+    $("#studentProfilePic").attr("src", dummyStudent.avatar);
+    $("#studentQrCode").attr("src", dummyStudent.qr);
+
+    renderDummyDocuments();
+  });
+
+  /* ============================
+     ACTION HANDLERS
+  ============================ */
+  $(document).on("click", ".js-upload-btn", function () {
+    devAlert("Upload");
+  });
+
+  $(document).on("click", ".js-edit-doc", function () {
+    devAlert("Edit document");
+  });
+
+  $(document).on("click", ".js-delete-doc", function () {
+    devAlert("Delete document");
+  });
+
+});
+</script>

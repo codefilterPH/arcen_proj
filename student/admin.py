@@ -1,7 +1,7 @@
 
 from django.contrib import admin
-from .models import Student, FlightMembership
-
+from .models import Student, FlightMembership, StudentDocument
+from simple_history.admin import SimpleHistoryAdmin
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
@@ -42,3 +42,16 @@ class FlightMembershipAdmin(admin.ModelAdmin):
         return str(obj.flight)
     flight_display.short_description = "Flight"
 
+
+@admin.register(StudentDocument)
+class StudentDocumentAdmin(SimpleHistoryAdmin):
+    list_display = (
+        'title',
+        'student',
+        'file_type',
+        'uploaded_by',
+        'uploaded_at',
+        'is_active',
+    )
+    list_filter = ('file_type', 'is_active', 'uploaded_at')
+    search_fields = ('title', 'description', 'original_filename')

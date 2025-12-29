@@ -1,3 +1,38 @@
+let schoolsLoaded = false;
+
+function observeSchoolsContainer() {
+  const schoolsContainer = document.getElementById('schoolsContainer');
+  if (!schoolsContainer) return;
+
+  const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+          if (entry.isIntersecting && !schoolsLoaded) {
+              initializeSchools();
+              schoolsLoaded = true;
+              observer.unobserve(entry.target);
+          }
+      });
+  }, { threshold: 0.1 });
+
+  observer.observe(schoolsContainer);
+}
+
+function initializeSchools() {
+  // Initial load
+  loadSchools();
+
+  // 🔍 Live search
+  $("#searchSchools").on("keyup", function () {
+      loadSchools(1, $(this).val());
+  });
+
+  // 🔄 Refresh
+  $("#btnRefresh").on("click", function () {
+      $("#searchSchools").val("");
+      loadSchools(1);
+  });
+}
+
 // Load and render schools
 function loadSchools(page = 1, search = "") {
     fetchWithRefresh(`/api/schools/?page=${page}&search=${encodeURIComponent(search)}`, {
@@ -56,15 +91,16 @@ function loadSchools(page = 1, search = "") {
 
                       <div class="col-6 col-sm-3">
                           <a href="#"
-                             class="btn btn-sm btn-dark w-100 text-white"
-                             title="Manage Academic Year"
+                             class="btn btn-sm btn-secondary w-100 text-white"
+                             title="School Settings"
                              data-school-id="${school.id}"
                              data-school-name="${school.name}"
                              data-bs-toggle="modal"
-                             data-bs-target="#schoolYearModal">
-                            <i class="fas fa-calendar-alt"></i>
+                             data-bs-target="#schoolSettingsModal">
+                            <i class="fas fa-cog"></i>
                           </a>
                       </div>
+
 
                       <div class="col-6 col-sm-3">
                           <a class="btn btn-sm btn-success w-100 btn-metric"

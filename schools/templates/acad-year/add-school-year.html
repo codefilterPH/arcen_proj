@@ -10,7 +10,8 @@
         <h5 class="modal-title">
           <i class="fas fa-calendar-plus me-2 text-success"></i> Add School Year
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" id="btnCancelAddYear"
+        data-bs-dismiss="modal"></button>
       </div>
 
       <!-- Body -->
@@ -40,7 +41,7 @@
 
         <!-- Footer -->
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnCancelAddYear">
             <i class="fas fa-times me-1"></i> Cancel
           </button>
           <button type="submit" class="btn btn-success">
@@ -53,31 +54,27 @@
   </div>
 </div>
 {% block extra_js %}
-<!-- JS -->
 <script src="{% static 'js/acad-years/add-years.js' %}"></script>
 
 <script>
-$(document).ready(function () {
-  $("#btnCancelAddYear").on("click", function () {
-    console.log("[SCHOOL YEAR] Cancel clicked — closing add modal and reopening list");
+document.addEventListener("DOMContentLoaded", function () {
 
-    // 🔹 Step 1: Blur the currently focused element
-    document.activeElement.blur();
+  const addModalEl = document.getElementById("addSchoolYearModal");
+  const settingsModalEl = document.getElementById("schoolSettingsModal");
 
-    // 🔹 Step 2: Hide the add modal
-    $("#addSchoolYearModal").modal("hide");
+  const addModal = bootstrap.Modal.getOrCreateInstance(addModalEl);
+  const settingsModal = bootstrap.Modal.getOrCreateInstance(settingsModalEl);
 
-    // 🔹 Step 3: Wait until it's fully hidden before showing the next one
-    $("#addSchoolYearModal").on("hidden.bs.modal", function () {
-      $("#schoolYearModal").modal("show");
-    });
+  // When opening Add School Year → hide settings
+  addModalEl.addEventListener("show.bs.modal", function () {
+    settingsModal.hide();
   });
 
-  // Optional: hide parent modal when opening Add modal
-  $("#addSchoolYearModal").on("show.bs.modal", function () {
-    $("#schoolYearModal").modal("hide");
+  // When closing Add School Year → reopen settings
+  addModalEl.addEventListener("hidden.bs.modal", function () {
+    settingsModal.show();
   });
+
 });
-
 </script>
 {% endblock %}

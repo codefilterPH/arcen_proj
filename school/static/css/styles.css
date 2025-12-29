@@ -19490,100 +19490,125 @@ body {
 .input-group-joined.input-group-solid .input-group-text {
   background-color: transparent;
 }
+/* =====================================================
+   SIDENAV LAYOUT — FINAL AUTHORITATIVE FIX
+   Desktop = PUSH MODE
+   Mobile  = OVERLAY MODE
+   ===================================================== */
 
+/* --------------------
+   BASE LAYOUT
+-------------------- */
 #layoutSidenav {
-  display: flex;
+  position: relative;
+  width: 100%;
+  overflow-x: hidden;
 }
-#layoutSidenav #layoutSidenav_nav {
-  flex-basis: 15rem;
-  flex-shrink: 0;
-  transition: transform 0.15s ease-in-out;
-  z-index: 1038;
-  transform: translateX(-15rem);
-}
+
+/* --------------------
+   CONTENT
+-------------------- */
 #layoutSidenav #layoutSidenav_content {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-width: 0;
-  flex-grow: 1;
+  width: 100%;
   min-height: calc(100vh - 3.625rem);
-  margin-left: -15rem;
+  margin-left: 0;
+  transition: margin-left 0.15s ease-in-out;
 }
 
+/* --------------------
+   SIDEBAR (BASE)
+-------------------- */
+#layoutSidenav #layoutSidenav_nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 15rem;
+  transform: translateX(-15rem);
+  transition: transform 0.15s ease-in-out;
+  z-index: 1045;;
+}
+#layoutSidenav #layoutSidenav_nav * {
+  pointer-events: auto;
+}
+
+/* =====================================================
+   MOBILE — OVERLAY MODE
+===================================================== */
 .sidenav-toggled #layoutSidenav #layoutSidenav_nav {
   transform: translateX(0);
 }
-.sidenav-toggled #layoutSidenav #layoutSidenav_content:before {
+
+.sidenav-toggled #layoutSidenav #layoutSidenav_content::before {
   content: "";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  position: fixed;
+  inset: 0;
   background: #000;
-  z-index: 1037;
   opacity: 0.5;
-  transition: opacity 0.3s ease-in-out;
+  z-index: 1018;
+  pointer-events: auto;
 }
 
+/* =====================================================
+   DESKTOP — PUSH MODE (THIS IS WHAT YOU WANT)
+===================================================== */
 @media (min-width: 992px) {
+
+  /* Sidebar visible */
   #layoutSidenav #layoutSidenav_nav {
     transform: translateX(0);
-  }
-  #layoutSidenav #layoutSidenav_content {
-    margin-left: 0;
-    transition: margin 0.15s ease-in-out;
+    position: fixed;
   }
 
+  #layoutSidenav #layoutSidenav_content {
+    margin-left: 15rem; /* ✅ PUSH CONTENT */
+    margin-right: 0;              /* reset */
+    padding-right: 1rem;          /* ✅ prevents right cut-off */
+    box-sizing: border-box;       /* ✅ critical */
+    width: auto!important;
+  }
+
+  /* Sidebar collapsed */
   .sidenav-toggled #layoutSidenav #layoutSidenav_nav {
     transform: translateX(-15rem);
   }
+
   .sidenav-toggled #layoutSidenav #layoutSidenav_content {
-    margin-left: -15rem;
+    margin-left: 0;
+    z-index: 1045;
   }
-  .sidenav-toggled #layoutSidenav #layoutSidenav_content:before {
+
+  .sidenav-toggled #layoutSidenav #layoutSidenav_content::before {
     display: none;
+    z-index: 1040;
   }
 }
+
+/* =====================================================
+   NAV-FIXED SUPPORT
+===================================================== */
 .nav-fixed .topnav {
   z-index: 1039;
 }
+
 .nav-fixed #layoutSidenav #layoutSidenav_nav {
-  width: 15rem;
   height: 100vh;
-  z-index: 1038;
 }
+
 .nav-fixed #layoutSidenav #layoutSidenav_nav .sidenav {
   padding-top: 3.625rem;
 }
+
+.nav-fixed #layoutSidenav #layoutSidenav_content {
+  padding-top: 3.625rem;
+}
+
+/* Scrollbar handling (unchanged, safe) */
 .nav-fixed #layoutSidenav #layoutSidenav_nav .sidenav .sidenav-menu {
   overflow-y: overlay;
 }
-.nav-fixed #layoutSidenav #layoutSidenav_nav .sidenav .sidenav-menu::-webkit-scrollbar {
-  width: 0.75rem;
-}
-.nav-fixed #layoutSidenav #layoutSidenav_nav .sidenav .sidenav-menu::-webkit-scrollbar-thumb {
-  border-radius: 10rem;
-  border-width: 0.2rem;
-  border-style: solid;
-  background-clip: padding-box;
-  background-color: rgba(33, 40, 50, 0.2);
-  border-color: transparent;
-}
-.nav-fixed #layoutSidenav #layoutSidenav_nav .sidenav .sidenav-menu::-webkit-scrollbar-button {
-  width: 0;
-  height: 0;
-  display: none;
-}
-.nav-fixed #layoutSidenav #layoutSidenav_nav .sidenav .sidenav-menu::-webkit-scrollbar-corner {
-  background-color: transparent;
-}
-.nav-fixed #layoutSidenav #layoutSidenav_nav .sidenav .sidenav-menu::-webkit-scrollbar-track {
-  background: inherit;
-}
+
 @media (pointer: fine) and (hover: hover) {
   .nav-fixed #layoutSidenav #layoutSidenav_nav .sidenav .sidenav-menu {
     overflow-y: hidden;
@@ -19592,58 +19617,50 @@ body {
     overflow-y: overlay;
   }
 }
+
 @media (pointer: coarse) and (hover: none) {
   .nav-fixed #layoutSidenav #layoutSidenav_nav .sidenav .sidenav-menu {
     overflow-y: overlay;
   }
 }
+
 @-moz-document url-prefix() {
   .nav-fixed #layoutSidenav #layoutSidenav_nav .sidenav .sidenav-menu {
     overflow-y: auto;
   }
 }
-.nav-fixed #layoutSidenav #layoutSidenav_nav .sidenav.sidenav-dark .sidenav-menu::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.25);
-  border-color: rgba(0, 0, 0, 0);
-}
-.nav-fixed #layoutSidenav #layoutSidenav_content {
-  padding-left: 13rem;
-  margin-left: 1rem;
-  top: 1.725rem;
-}
 
+/* =====================================================
+   RTL SUPPORT (NO NEGATIVE MARGINS)
+===================================================== */
 .layout-rtl #layoutSidenav #layoutSidenav_nav {
+  left: auto;
+  right: 0;
   transform: translateX(15rem);
 }
-.layout-rtl #layoutSidenav #layoutSidenav_content {
-  margin-left: 0;
-  margin-right: -15rem;
-}
+
 .layout-rtl.sidenav-toggled #layoutSidenav #layoutSidenav_nav {
   transform: translateX(0);
 }
+
+.layout-rtl #layoutSidenav #layoutSidenav_content {
+  margin-left: 0;
+  margin-right: 0;
+}
+
 @media (min-width: 992px) {
+
   .layout-rtl #layoutSidenav #layoutSidenav_nav {
     transform: translateX(0);
   }
-  .layout-rtl #layoutSidenav #layoutSidenav_content {
-    margin-right: 0;
-    transition: margin 0.15s ease-in-out;
-  }
-  .layout-rtl.sidenav-toggled #layoutSidenav #layoutSidenav_nav {
-    transform: translateX(15rem);
-  }
-  .layout-rtl.sidenav-toggled #layoutSidenav #layoutSidenav_content {
-    margin-right: -15rem;
-  }
-}
 
-.layout-rtl.nav-fixed #layoutSidenav #layoutSidenav_nav {
-  left: auto;
-}
-.layout-rtl.nav-fixed #layoutSidenav #layoutSidenav_content {
-  padding-left: 0;
-  padding-right: 15rem;
+  .layout-rtl #layoutSidenav #layoutSidenav_content {
+    margin-right: 15rem;
+  }
+
+  .layout-rtl.sidenav-toggled #layoutSidenav #layoutSidenav_content {
+    margin-right: 0;
+  }
 }
 
 .dropdown-notifications {
