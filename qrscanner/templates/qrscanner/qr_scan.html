@@ -1,0 +1,266 @@
+
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* =====================================================
+       SCANNER CARD (MODAL CONTENT)
+       ===================================================== */
+    .scanner-card {
+        background: #020617;
+        border-radius: 14px;
+        padding: 1.25rem;
+        width: 100%;
+        max-width: 380px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+        color: #e5e7eb;
+    }
+
+    @media (min-width: 768px) {
+        .scanner-card {
+            max-width: 420px;
+        }
+    }
+
+    /* =====================================================
+       QR CAMERA AREA
+       ===================================================== */
+    #qr-reader {
+        width: 100%;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    /* =====================================================
+       STATUS TEXT
+       ===================================================== */
+    .status {
+        text-align: center;
+        margin-top: 0.75rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .status.success { color: #22c55e; }
+    .status.error   { color: #ef4444; }
+
+    /* =====================================================
+       STUDENT CARD
+       ===================================================== */
+    #studentCard {
+        background: #020617;
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 10px;
+    }
+
+    #studentPhoto {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 10px;
+        background: #111827;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- QR SCANNER MODAL -->
+<div class="modal fade"
+     id="qrScannerModal"
+     tabindex="-1"
+     aria-labelledby="qrScannerModalLabel"
+     aria-hidden="true"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false">
+
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content scanner-card">
+
+            <!-- HEADER -->
+            <div class="modal-header border-0 pb-2">
+                <h5 class="modal-title w-100 text-center"
+                    id="qrScannerModalLabel">
+                    📷 Scan QR Code
+                </h5>
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                        onclick="stopQrScanner()">
+                </button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal-body pt-2">
+
+                <div id="qr-reader"></div>
+
+                <div id="scan-status" class="status">
+                    Waiting for QR code…
+                </div>
+
+                <div id="result"
+                     class="mt-2 fw-semibold text-info text-center"></div>
+
+                <!-- STUDENT INFO -->
+                <div id="studentCard"
+                     class="card mt-3 d-none">
+                    <div class="card-body">
+                        <div class="d-flex gap-3 align-items-start">
+                            <img id="studentPhoto" src="" alt="Photo">
+
+                            <div class="small">
+                                <div><strong>Name:</strong> <span id="studentName">—</span></div>
+                                <div><strong>Rank:</strong> <span id="studentRank">—</span></div>
+                                <div><strong>Class:</strong> <span id="studentClass">—</span></div>
+                                <div><strong>Contact:</strong> <span id="studentContact">—</span></div>
+                                <div><strong>Address:</strong> <span id="studentAddress">—</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid mt-3">
+                    <button id="restartScan"
+                            class="btn btn-outline-secondary btn-sm d-none"
+                            onclick="restartScanner()">
+                        Scan Again
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+<script>
+let qrScanner = null;
+
+/* ============================================================
+ * START SCANNER
+ * ============================================================ */
+function startQrScanner() {
+    if (qrScanner) return;
+
+    qrScanner = new Html5Qrcode("qr-reader");
+
+    qrScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        onScanSuccess,
+        function () {}
+    ).catch(err => {
+        console.error("[QR] Camera error:", err);
+        document.getElementById("result").innerText =
+            "Camera access denied or unavailable";
+    });
+}
+
+/* ============================================================
+ * STOP SCANNER
+ * ============================================================ */
+function stopQrScanner() {
+    if (!qrScanner) return;
+
+    qrScanner.stop().then(() => {
+        qrScanner.clear();
+        qrScanner = null;
+        console.log("[QR] Scanner stopped");
+    }).catch(err => {
+        console.warn("[QR] Stop failed:", err);
+    });
+}
+
+/* ============================================================
+ * SCAN SUCCESS CALLBACK
+ * ============================================================ */
+function onScanSuccess(decodedText) {
+    console.log("[QR] Raw decoded text:", decodedText);
+
+    let data = null;
+
+    try {
+        data = JSON.parse(decodedText);
+    } catch (err) {
+        document.getElementById("result").innerText =
+            "Legacy QR detected. Processing…";
+        handleLegacyQR({ raw_code: decodedText, is_legacy: true });
+        return;
+    }
+
+    const requiredFields = ["user_id", "name", "rank", "classification"];
+    for (const field of requiredFields) {
+        if (!(field in data)) {
+            document.getElementById("result").innerText =
+                "QR code missing required data";
+            return;
+        }
+    }
+
+    handleDecodedQR(data);
+}
+
+/* ============================================================
+ * LEGACY QR HANDLER
+ * ============================================================ */
+function handleLegacyQR(data) {
+    document.getElementById("result").innerText =
+        `Legacy QR scanned: ${data.raw_code}`;
+}
+
+/* ============================================================
+ * HANDLE DECODED QR (UI)
+ * ============================================================ */
+function handleDecodedQR(data) {
+    document.getElementById("result").innerText =
+        `Scanned: ${data.name}`;
+
+    document.getElementById("studentName").innerText = data.name || "—";
+    document.getElementById("studentRank").innerText = data.rank || "—";
+    document.getElementById("studentClass").innerText = data.classification || "—";
+    document.getElementById("studentContact").innerText = data.contact_number || "—";
+    document.getElementById("studentAddress").innerText =
+        [data.address, data.city, data.province].filter(Boolean).join(", ") || "—";
+
+    if (data.profile_picture) {
+        document.getElementById("studentPhoto").src = data.profile_picture;
+    }
+
+    document.getElementById("studentCard").classList.remove("d-none");
+    document.getElementById("restartScan").classList.remove("d-none");
+
+    stopQrScanner();
+}
+
+/* ============================================================
+ * RESTART SCANNER
+ * ============================================================ */
+function restartScanner() {
+    document.getElementById("studentCard").classList.add("d-none");
+    document.getElementById("restartScan").classList.add("d-none");
+    document.getElementById("result").innerText = "";
+    document.getElementById("scan-status").innerText = "Waiting for QR code…";
+    startQrScanner();
+}
+
+/* ============================================================
+ * MODAL LIFECYCLE
+ * ============================================================ */
+const scannerModal = document.getElementById("qrScannerModal");
+
+scannerModal.addEventListener("shown.bs.modal", () => {
+    startQrScanner();
+});
+
+scannerModal.addEventListener("hidden.bs.modal", () => {
+    stopQrScanner();
+});
+</script>
+{% endblock %}

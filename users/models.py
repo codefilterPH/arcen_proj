@@ -164,13 +164,11 @@ class UserProfile(models.Model):
         if self.preferred_initial:
             self.preferred_initial = self.preferred_initial.upper()
 
-        # Detect if QR should be regenerated
         regenerate_qr = False
 
         if self.pk:
             old = UserProfile.objects.filter(pk=self.pk).first()
 
-            # Check fields included in QR
             fields_to_watch = [
                 "rank", "contact_number", "address",
                 "city", "province", "default_avatar",
@@ -183,14 +181,24 @@ class UserProfile(models.Model):
                     regenerate_qr = True
                     break
 
-            # Check user first/last name
-            if old.user.first_name != self.user.first_name or old.user.last_name != self.user.last_name:
+            # User name changes (affects __str__)
+            if (
+                    old.user.first_name != self.user.first_name or
+                    old.user.last_name != self.user.last_name
+            ):
                 regenerate_qr = True
 
-        # Save the profile first
+            # 🔴 NEW: classification name change
+            if old.classification and self.classification:
+                if old.classification.name != self.classification.name:
+                    regenerate_qr = True
+
+            # 🔴 OPTIONAL: profile picture URL change
+            if old.get_profile_picture_url != self.get_profile_picture_url:
+                regenerate_qr = True
+
         super().save(*args, **kwargs)
 
-        # Regenerate QR if needed
         if regenerate_qr or not self.qr_code:
             self.generate_qr_code(force=True)
             super().save(update_fields=["qr_code"])

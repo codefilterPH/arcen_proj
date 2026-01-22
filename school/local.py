@@ -1,6 +1,7 @@
 from .settings import *
 import os
 
+
 # For serving static files in development
 # For serving static files in development
 STATICFILES_DIRS = [
@@ -16,7 +17,8 @@ STATICFILES_DIRS = [
 
 
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = BASE_DIR / "static"
+
 STATIC_URL = "/static/"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -31,17 +33,17 @@ STATICFILES_FINDERS = [
 ]
 
 
-
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.49',
+            '10.169.97.31',
+         ]
 # SECURITY WARNING: keep the secret key used in production secret
 SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: define the correct hosts in production!
 # ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", default="*").split(',')
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://127.0.0.1:8991",
-    "http://localhost:8991",
-    "http://192.168.0.29:8991",
+    "https://192.168.1.49:8888",
 ]
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
+

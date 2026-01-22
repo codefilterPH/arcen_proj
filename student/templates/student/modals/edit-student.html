@@ -1,4 +1,66 @@
 {% load static %}
+<style>
+/* =========================================
+   INVALID FIELD STATE (Bootstrap-aligned)
+   ========================================= */
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: #dc3545;              /* Bootstrap danger */
+  padding-right: calc(1.5em + 0.75rem);
+  background-image: none;             /* remove default bg icon */
+  box-shadow: none;
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.15rem rgba(220, 53, 69, 0.25);
+}
+
+/* =========================================
+   INLINE ERROR MESSAGE
+   ========================================= */
+.invalid-feedback {
+  display: block;
+  font-size: 0.85rem;
+  color: #dc3545;
+  margin-top: 0.25rem;
+}
+
+/* =========================================
+   OPTIONAL: HIGHLIGHT FIELD CONTAINER
+   ========================================= */
+.col-md-4:has(.is-invalid),
+.col-md-6:has(.is-invalid) {
+  position: relative;
+}
+
+.col-md-4:has(.is-invalid)::after,
+.col-md-6:has(.is-invalid)::after {
+  content: "";
+  position: absolute;
+  inset: -0.25rem;
+  border-radius: 0.375rem;
+  border: 1px dashed rgba(220, 53, 69, 0.35);
+  pointer-events: none;
+}
+
+/* =========================================
+   OPTIONAL: SUBTLE SHAKE ANIMATION
+   ========================================= */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  50% { transform: translateX(2px); }
+  75% { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
+}
+
+.is-invalid {
+  animation: shake 0.2s ease-in-out;
+}
+</style>
+
 <!-- ========================= -->
 <!-- EDIT STUDENT MODAL -->
 <!-- ========================= -->
@@ -139,7 +201,7 @@
 
               <div class="col-md-4">
                 <label class="form-label">Email</label>
-                <input id="student_email" type="email" class="form-control">
+                <input id="student_email" type="email" class="form-control" required>
               </div>
             </div>
           </div>
@@ -249,10 +311,9 @@
             Cancel
           </button>
 
-          <button type="button"
+          <button type="button" id="btnProfileSave"
                   form="editStudentForm"
-                  class="btn btn-primary"
-                  onclick="updateStudentProfile();">
+                  class="btn btn-primary">
             <i class="fas fa-save me-1"></i> Save Changes
           </button>
         </div>
@@ -261,11 +322,21 @@
     </div>
   </div>
 </div>
+
 <script src="{% static 'js/student/edit-students.js' %}"></script>
 <script src="{% static 'js/student/get-student-profile.js' %}"></script>
 
 <script>
   $(document).ready(function () {
+
+    $("#btnProfileSave").on("click", function (e) {
+      e.preventDefault();
+
+      // Guard: prevent double submit
+      if ($(this).prop("disabled")) return;
+
+      updateStudentProfile();
+    });
 
     // When Edit Student modal is ABOUT TO OPEN
     $('#editStudentModal').on('show.bs.modal', function (event) {

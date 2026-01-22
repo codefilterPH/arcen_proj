@@ -115,6 +115,7 @@ class Student(models.Model):
 
     def generate_qr_code(self, force=False):
         """Generate or refresh QR code as Base64 PNG string with AFRC logo in center."""
+        print("[QR CODE] Generating new qr code.")
         if self.qr_code and not force:
             return
 
@@ -179,33 +180,26 @@ class Student(models.Model):
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None
+        regenerate_qr = False
 
         if not is_new:
-            previous = Student.objects.filter(pk=self.pk).only(
-                "enrollment_status",
-                "enrolled_at"
+            old = Student.objects.filter(pk=self.pk).only(
+                "student_id", "school_id"
             ).first()
-        else:
-            previous = None
 
-        # 🔹 Normalize preferred initial
+            if old and (
+                    old.student_id != self.student_id or
+                    old.school_id != self.school_id
+            ):
+                regenerate_qr = True
+
+        # normalize
         if self.preferred_initial:
             self.preferred_initial = self.preferred_initial.upper()
 
-        # 🔹 Detect enrollment status change
-        if previous and previous.enrollment_status != self.enrollment_status:
-            self.status_changed_at = timezone.now()
-
-            # 🔹 First time officially enrolled
-            if self.enrollment_status == "enrolled" and not previous.enrolled_at:
-                self.enrolled_at = timezone.now()
-
+        self.generate_qr_code(force=True)
         super().save(*args, **kwargs)
 
-        # 🔹 QR generation
-        if not self.qr_code:
-            self.generate_qr_code()
-            super().save(update_fields=["qr_code"])
 
     def __str__(self):
         full_name = " ".join(

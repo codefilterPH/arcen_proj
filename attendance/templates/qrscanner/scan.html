@@ -15,17 +15,36 @@
       <!-- Body -->
       <div class="modal-body bg-light">
 
+        <!-- Camera Selector -->
+        <div id="cameraChooser" class="mb-3" style="display:none;">
+          <label class="fw-semibold mb-1">Select Camera</label>
+          <select id="cameraSelect" class="form-select"></select>
+          <button class="btn btn-primary w-100 mt-2" onclick="startSelectedCamera()">
+            <i class="fas fa-video me-1"></i> Start Scanner
+          </button>
+        </div>
+
         <!-- QR Reader -->
         <div class="text-center mb-3">
           <div id="reader" style="width:100%; max-width:400px; margin:0 auto;"></div>
-          <div id="result" class="mt-3 text-muted">Scan a QR code to see the result here</div>
+          <div id="result" class="mt-3 text-muted">
+            Select a camera and start scanning
+          </div>
+        </div>
+        <!-- Camera Toggle -->
+        <div class="d-flex justify-content-center mt-2">
+          <button id="toggleCameraBtn"
+                  class="btn btn-outline-primary btn-sm"
+                  type="button"
+                  onclick="toggleCamera()">
+            <i class="fas fa-sync-alt me-1"></i> Switch Camera
+          </button>
         </div>
 
         <!-- Student Card -->
         <div id="studentCard" class="card shadow-sm mx-auto" style="max-width:550px; display:none;">
           <div class="card-body text-center">
 
-            <!-- Profile Picture -->
             <img id="studentPhoto"
                  src="{% static 'img/users/img_holder.png' %}"
                  class="rounded-circle mb-3"
@@ -34,30 +53,13 @@
             <h4 class="fw-bold mb-3">Scanned Information</h4>
 
             <div class="text-start mb-3 ps-3">
-
-              <p class="mb-1"><strong>Name:</strong>
-                <span id="studentName">—</span>
-              </p>
-
-              <p class="mb-1"><strong>Rank:</strong>
-                <span id="studentRank">—</span>
-              </p>
-
-              <p class="mb-1"><strong>Classification:</strong>
-                <span id="studentClass">—</span>
-              </p>
-
-              <p class="mb-1"><strong>Contact No.:</strong>
-                <span id="studentContact">—</span>
-              </p>
-
-              <p class="mb-1"><strong>Address:</strong>
-                <span id="studentAddress">—</span>
-              </p>
-
+              <p><strong>Name:</strong> <span id="studentName">—</span></p>
+              <p><strong>Rank:</strong> <span id="studentRank">—</span></p>
+              <p><strong>Classification:</strong> <span id="studentClass">—</span></p>
+              <p><strong>Contact No.:</strong> <span id="studentContact">—</span></p>
+              <p><strong>Address:</strong> <span id="studentAddress">—</span></p>
             </div>
 
-            <!-- Attendance Status -->
             <div class="mb-3">
               <label class="fw-bold mb-1">Attendance Status</label>
               <select id="attendanceStatus" class="form-select text-center fw-bold">
@@ -69,8 +71,7 @@
               </select>
             </div>
 
-            <!-- Buttons -->
-            <div class="d-flex justify-content-center gap-2 mt-3">
+            <div class="d-flex justify-content-center gap-2">
               <button class="btn btn-success" onclick="confirmAttendance()">
                 <i class="fas fa-check me-1"></i> Confirm
               </button>
@@ -96,31 +97,30 @@
 </div>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
-
 <script src="{% static 'attendance/js/submit-attendance.js' %}"></script>
 <script src="{% static 'attendance/js/qrscanner.js' %}"></script>
 
 <script>
-  $(document).ready(function() {
+$(function () {
 
-    $("#qrScannerModal").on("shown.bs.modal", function () {
-        console.log("📸 QR Scanner modal opened.");
-        if (typeof initQrScanner === "function") {
-            setTimeout(() => initQrScanner(), 300);
-        }
-    });
-
-    $("#qrScannerModal").on("hidden.bs.modal", function () {
-        console.log("❌ QR Scanner modal closed.");
-        if (typeof stopQrScanner === "function") {
-            stopQrScanner();
-        }
-
-        // Reset card UI
-        $("#studentCard").hide();
-        $("#studentPhoto").attr("src", "{% static 'img/users/img_holder.png' %}");
-        $("#studentName, #studentRank, #studentClass, #studentContact, #studentAddress, #studentDisplayFormat, #studentDefaultAvatar")
-          .text("—");
-      });
+  $("#qrScannerModal").on("shown.bs.modal", function () {
+      if (window.initQrScanner) {
+          initQrScanner();
+      }
   });
+
+  $("#qrScannerModal").on("hidden.bs.modal", function () {
+      if (window.stopQrScanner) {
+          stopQrScanner();
+      }
+
+      $("#cameraChooser").hide();
+      $("#studentCard").hide();
+      $("#result").text("Select a camera and start scanning");
+
+      $("#studentPhoto").attr("src", "{% static 'img/users/img_holder.png' %}");
+      $("#studentName, #studentRank, #studentClass, #studentContact, #studentAddress").text("—");
+  });
+
+});
 </script>

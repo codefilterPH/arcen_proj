@@ -30,7 +30,8 @@ env_file_path = os.path.join(BASE_DIR, 'school', 'secrets', '.env')
 load_dotenv(env_file_path)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", default="*").split(',')
 # Safety guard
@@ -63,6 +64,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'django_celery_beat',
     'simple_history',
+    'qrscanner',
 ]
 
 MIDDLEWARE = [
@@ -115,21 +117,34 @@ DATABASES = {
 
 
 REST_FRAMEWORK = {
+    # 🔐 Authentication
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'authentication.utils.cookie_jwt_auth.CookieJWTAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+
+    # 🔒 Permissions
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+
+    # 📄 Pagination
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
+
+    # 🚫 Disable Browsable API (THIS IS THE KEY)
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+
+    # 🧯 Custom exception handler
     'EXCEPTION_HANDLER': 'school.exceptions.exceptions.custom_exception_handler',
 
-    # 👇 prevent DRF from hijacking `?format=...`
+    # 🚫 Prevent `?format=api` / `?format=html`
     'URL_FORMAT_OVERRIDE': None,
 }
+
 
 
 SIMPLE_JWT = {
@@ -204,13 +219,13 @@ STATIC_URL = 'static/'
 
 # For serving static files in development
 STATICFILES_DIRS = [
+    BASE_DIR / "school" / "static",
     BASE_DIR / "authentication" / "static",
     BASE_DIR / "qrscanner" / "static",
     BASE_DIR / "dashboard" / "static",
     BASE_DIR / "users" / "static",
     # BASE_DIR / "attendance" / "static",
     BASE_DIR / "schools" / "static",
-    BASE_DIR / "school" / "static",
     BASE_DIR / "student" / "static",
 ]
 

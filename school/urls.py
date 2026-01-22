@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/try-me/', admin.site.urls),
     path('', include('authentication.urls')),
     path('', include('dashboard.urls')),
+    path('', include('qrscanner.urls')),
     path('', include('users.urls')),
     path('', include('schools.urls')),
     path('', include('student.urls')),

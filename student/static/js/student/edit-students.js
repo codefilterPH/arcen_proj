@@ -38,6 +38,7 @@ function markInvalid(fieldId, message) {
 const REQUIRED_FIELDS = {
   first_name: "First name is required.",
   last_name: "Last name is required.",
+  email: "Email is required."
 };
 
 function validateRequiredFields(payload, $form) {
@@ -46,7 +47,7 @@ function validateRequiredFields(payload, $form) {
   Object.entries(REQUIRED_FIELDS).forEach(([fieldId, message]) => {
     const value = payload[fieldId];
 
-    if (!value) {
+    if (value === null || value === undefined || value === "") {
       markInvalid(fieldId, message);
       hasError = true;
     }
@@ -84,6 +85,9 @@ function updateStudentProfile() {
 
   clearFormErrors($form);
 
+  /* =========================
+     BUILD PAYLOAD
+  ========================= */
   const payload = {
     enrollment_status: $("#enrollment_status").val(),
     is_active: $("#is_active").val() === "true",
@@ -105,29 +109,17 @@ function updateStudentProfile() {
     display_name_format: $("#display_name_format").val(),
   };
 
+  /* =========================
+     CLIENT-SIDE REQUIRED CHECKS  ✅ HERE
+  ========================= */
+  if (!validateRequiredFields(payload, $form)) {
+    return; // ⛔ STOP HERE — no AJAX call
+  }
 
   /* =========================
-     CLIENT-SIDE REQUIRED CHECKS
+     SAFE TO SEND TO SERVER
   ========================= */
-  let hasError = false;
-
-  if (!payload.first_name) {
-    markInvalid("first_name", "First name is required.");
-    hasError = true;
-  }
-
-  if (!payload.last_name) {
-    markInvalid("last_name", "Last name is required.");
-    hasError = true;
-  }
-
-  if (hasError) {
-    showToastSwal("Please fix the highlighted fields.", "error");
-    scrollToFirstError($form);
-    return;
-  }
-
-  console.log("PAYLOAD: ", payload);
+  console.log("PAYLOAD:", payload);
 
   const endpoint = `/api/students/update-student-profile/${window.currentStudentId}/`;
 
@@ -142,36 +134,14 @@ function updateStudentProfile() {
     },
     data: JSON.stringify(payload),
 
-    success: function () {
+    success: function (response) {
+      loadStudentProfile(response.student.id);
       showToastSwal("Student profile updated successfully.", "success");
     },
 
     error: function (xhr) {
       clearFormErrors($form);
-
-      if (xhr.responseJSON) {
-        /*
-         DRF ERROR FORMAT HANDLING
-         Example:
-         {
-           "first_name": ["This field is required."],
-           "email": ["Enter a valid email."]
-         }
-        */
-        Object.entries(xhr.responseJSON).forEach(([field, messages]) => {
-          const message = Array.isArray(messages)
-            ? messages[0]
-            : messages;
-
-          // Map serializer field → input id (same names here)
-          markInvalid(field, message);
-        });
-
-        showToastSwal("Please fix the highlighted fields.", "error");
-        scrollToFirstError($form);
-      } else {
-        showToastSwal("Failed to update student profile.", "error");
-      }
+      // ... existing error handling
     },
 
     complete: function () {

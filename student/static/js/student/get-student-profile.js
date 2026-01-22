@@ -1,12 +1,13 @@
 function loadStudentProfile(studentId) {
+  console.log("[RELOADING STUDENT PROFILE]");
   $.ajax({
     url: `/api/students/get-student-profile/${studentId}/`,
     type: "GET",
     headers: authHeaders(),
 
     success: function (data) {
-      console.log("✅ Student profile loaded:", data);
-
+      // console.log("✅ Student profile loaded:", data);
+      // console.log(data.email);
       /* =========================
          LEFT PANEL (PROFILE)
       ========================= */
@@ -15,6 +16,9 @@ function loadStudentProfile(studentId) {
       $("#studentFullName").text(
         (data.full_name || "—").toUpperCase()
       );
+
+
+      $("#student_email").val(data.email || "—");
 
       $("#student_id").text(data.student_id || "—");
 

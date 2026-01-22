@@ -208,13 +208,13 @@ function initStudentsModal(options = {}) {
 
       <!-- Actions -->
       <td class="text-center" style="white-space:nowrap;">
-        <button class="btn btn-sm btn-outline-primary btnDownloadQR"
+        <button type="button"
+                class="btn btn-sm btn-outline-primary btnDownloadQR"
                 data-qr-url="${student.qr_image}"
                 data-student-id="${student.id}"
                 title="Download QR Code">
-          <i class="fas fa-qrcode"></i>
+            <i class="fas fa-download"></i>
         </button>
-
         <button class="btn btn-sm btn-outline-secondary btnEditStudent"
                 data-student-id="${student.id}"
                 title="Edit Student"
